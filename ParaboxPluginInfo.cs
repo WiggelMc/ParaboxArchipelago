@@ -2,8 +2,8 @@
 {
     public static class ParaboxPluginInfo
     {
-        public const string PluginGuid = "wiggelmc.archipelago.parabox";
-        public const string PluginName = "Archipelago Randomizer";
-        public const string PluginVersion = PluginInfo.PLUGIN_VERSION;
+        public const string PLUGIN_GUID = "wiggelmc.archipelago.parabox";
+        public const string PLUGIN_NAME = "Archipelago Randomizer";
+        public const string PLUGIN_VERSION = PluginInfo.PLUGIN_VERSION;
     }
 }
