@@ -10,13 +10,15 @@ namespace ParaboxArchipelago
     public class ParaboxArchipelagoPlugin : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
+        internal static ParaboxState State;
         
         private void Awake()
         {
             Log = Logger;
+            State = new ParaboxState();
             var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
             harmony.PatchAll();
-            Resources.Resources_Load.Patch(harmony);
+            ResourcesPatches.Resources_Load.Patch(harmony);
             
             Log.LogInfo($"Plugin {ParaboxPluginInfo.PLUGIN_GUID} is loaded!");
         }

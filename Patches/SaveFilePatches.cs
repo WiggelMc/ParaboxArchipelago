@@ -1,11 +1,10 @@
-﻿using BepInEx.Logging;
-using HarmonyLib;
+﻿using HarmonyLib;
 
 namespace ParaboxArchipelago.Patches
 {
-    public static class SaveFile
+    public static class SaveFilePatches
     {
-        [HarmonyPatch(typeof(global::SaveFile), "GetSaveFilePath")]
+        [HarmonyPatch(typeof(SaveFile), "GetSaveFilePath")]
         public class SaveFile_GetSaveFilePath
         {
             public static void Postfix(ref string __result, int slot)

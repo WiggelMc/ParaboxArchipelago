@@ -6,13 +6,13 @@ using Object = UnityEngine.Object;
 
 namespace ParaboxArchipelago.Patches
 {
-    public static class Resources
+    public static class ResourcesPatches
     {
         public class Resources_Load
         {
             public static void Patch(Harmony harmony)
             {
-                var methods = typeof(UnityEngine.Resources).GetMethods()
+                var methods = typeof(Resources).GetMethods()
                     .Where(
                         i => i.Name == "Load"
                              && i.ReturnType == typeof(Object)
@@ -64,7 +64,7 @@ namespace ParaboxArchipelago.Patches
             }
         }
 
-        [HarmonyPatch(typeof(UnityEngine.Resources), nameof(UnityEngine.Resources.Load), typeof(string), typeof(Type))]
+        [HarmonyPatch(typeof(Resources), nameof(Resources.Load), typeof(string), typeof(Type))]
         public class Resources_Load_Type
         {
             public static bool Prefix(ref Object __result, string path, Type systemTypeInstance)
