@@ -1,4 +1,6 @@
 ﻿using BepInEx;
+using BepInEx.Logging;
+using HarmonyLib;
 
 namespace ParaboxArchipelago
 {
@@ -6,9 +8,12 @@ namespace ParaboxArchipelago
     [BepInProcess("Patrick's Parabox.exe")]
     public class ParaboxArchipelago : BaseUnityPlugin
     {
+        internal static ManualLogSource Log;
+        
         private void Awake()
         {
-            // Plugin startup logic
+            Log = Logger;
+            new Harmony(ParaboxPluginInfo.PLUGIN_GUID).PatchAll();
             Logger.LogInfo($"Plugin {ParaboxPluginInfo.PLUGIN_GUID} is loaded!");
         }
     }
