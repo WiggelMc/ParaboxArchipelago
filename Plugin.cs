@@ -3,6 +3,7 @@
 namespace ParaboxArchipelago
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInProcess("Patrick's Parabox.exe")]
     public class Plugin : BaseUnityPlugin
     {
         private void Awake()
