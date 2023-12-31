@@ -76,6 +76,15 @@ namespace ParaboxArchipelago.Patches
             }
         }
 
+        [HarmonyPatch(typeof(Prefs), nameof(Prefs.DefaultPrefs))]
+        public static class Prefs_DefaultPrefs
+        {
+            public static void Postfix()
+            {
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PREF DEFAULT");
+            }
+        }
+        
         [HarmonyPatch(typeof(Prefs), nameof(Prefs.Load))]
         public static class Prefs_Load
         {
