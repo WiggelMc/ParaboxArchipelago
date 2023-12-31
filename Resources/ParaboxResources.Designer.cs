@@ -84,6 +84,7 @@ namespace ParaboxArchipelago.Patches {
         
         /// <summary>
         ///   Looks up a localized string similar to AP_Lang_Keys,EN,DE,ES,FR,KO,IT,JA,PTBR,RU,ZHCN
+        ///AP_Text_Credits_Randomizer,Randomizer:,---,---,---,---,---,---,---,---,---
         ///Area_Introst,BEGIN,---,---,---,---,---,---,---,---,---.
         /// </summary>
         internal static string local {
