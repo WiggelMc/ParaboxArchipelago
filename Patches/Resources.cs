@@ -12,12 +12,11 @@ namespace ParaboxArchipelago.Patches
 {
     public static class Resources
     {
-        public class Prefs_GetPrefsFilePath
+        public class Resources_Load
         {
-            private static MethodBase TargetMethod() => AccessTools.Method(typeof(UnityEngine.Resources),
-                nameof(UnityEngine.Resources.Load), new[] { typeof(string), typeof(Type) });
-            public static bool Prefix(ref Object __result, string path, Type systemTypeInstance)
+            public static bool Prefix(ref Object __result, string path)
             {
+                ParaboxArchipelago.Log.LogInfo("LOAD CALLED " + path);
                 if (path == "hub")
                 {
                     __result = new TextAsset("version 4\n#\n");
@@ -27,7 +26,7 @@ namespace ParaboxArchipelago.Patches
                 return true;
             }
             
-            public static void Postfix(ref Object __result, string path, Type systemTypeInstance)
+            public static void Postfix(ref Object __result, string path)
             {
                 
             }

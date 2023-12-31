@@ -1,6 +1,9 @@
-﻿using BepInEx;
+﻿using System;
+using System.Linq;
+using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using ParaboxArchipelago.Patches;
 
 namespace ParaboxArchipelago
 {
@@ -13,7 +16,27 @@ namespace ParaboxArchipelago
         private void Awake()
         {
             Log = Logger;
-            new Harmony(ParaboxPluginInfo.PLUGIN_GUID).PatchAll();
+            var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
+            harmony.PatchAll();
+
+            var originals = typeof(UnityEngine.Resources).GetMethods().Where(i => i.Name == "Load");
+            var prefix =
+                typeof(Resources.Resources_Load).GetMethod(nameof(Resources.Resources_Load.Prefix));
+            var postfix =
+                typeof(Resources.Resources_Load).GetMethod(nameof(Resources.Resources_Load.Postfix));
+            foreach (var original in originals)
+            {
+                try
+                {
+                    harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
+                }
+                catch (Exception e)
+                {
+                    Logger.LogInfo(e);
+                }
+            }
+
+            
             Logger.LogInfo($"Plugin {ParaboxPluginInfo.PLUGIN_GUID} is loaded!");
         }
     }
