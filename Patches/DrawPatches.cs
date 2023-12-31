@@ -6,7 +6,7 @@ namespace ParaboxArchipelago.Patches
     public static class DrawPatches
     {
         [HarmonyPatch(typeof(Draw), nameof(Draw.DrawText))]
-        public class Draw_DrawText
+        public static class Draw_DrawText
         {
             public static void Prefix(
                 string text,
@@ -32,7 +32,7 @@ namespace ParaboxArchipelago.Patches
         }
         
         [HarmonyPatch(typeof(Draw), "DrawPortal")]
-        public class Draw_DrawPortal
+        public static class Draw_DrawPortal
         {
             [HarmonyPriority(-100_000)]
             public static void Prefix(

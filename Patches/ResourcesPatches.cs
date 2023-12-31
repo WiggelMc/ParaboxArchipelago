@@ -8,7 +8,7 @@ namespace ParaboxArchipelago.Patches
 {
     public static class ResourcesPatches
     {
-        public class Resources_Load
+        public static class Resources_Load
         {
             public static void Patch(Harmony harmony)
             {
@@ -65,7 +65,7 @@ namespace ParaboxArchipelago.Patches
         }
 
         [HarmonyPatch(typeof(Resources), nameof(Resources.Load), typeof(string), typeof(Type))]
-        public class Resources_Load_Type
+        public static class Resources_Load_Type
         {
             public static bool Prefix(ref Object __result, string path, Type systemTypeInstance)
             {

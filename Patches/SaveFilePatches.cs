@@ -5,7 +5,7 @@ namespace ParaboxArchipelago.Patches
     public static class SaveFilePatches
     {
         [HarmonyPatch(typeof(SaveFile), "GetSaveFilePath")]
-        public class SaveFile_GetSaveFilePath
+        public static class SaveFile_GetSaveFilePath
         {
             public static void Postfix(ref string __result, int slot)
             {
@@ -22,7 +22,7 @@ namespace ParaboxArchipelago.Patches
         }
     
         [HarmonyPatch(typeof(Prefs), nameof(Prefs.GetPrefsFilePath))]
-        public class Prefs_GetPrefsFilePath
+        public static class Prefs_GetPrefsFilePath
         {
             public static void Postfix(ref string __result)
             {

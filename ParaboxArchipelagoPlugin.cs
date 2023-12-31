@@ -19,6 +19,7 @@ namespace ParaboxArchipelago
             var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
             harmony.PatchAll();
             ResourcesPatches.Resources_Load.Patch(harmony);
+            MusicPatches.FMODSquare_AreaNameToFMODIndex.Patch();
             
             Log.LogInfo($"Plugin {ParaboxPluginInfo.PLUGIN_GUID} is loaded!");
         }
