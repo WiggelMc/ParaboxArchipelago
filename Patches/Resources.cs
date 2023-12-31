@@ -31,24 +31,35 @@ namespace ParaboxArchipelago.Patches
             public static bool Prefix(ref Object __result, string path)
             {
                 ParaboxArchipelagoPlugin.Log.LogInfo("LOAD CALLED " + path);
-                if (path == "levels/hub")
+                switch (path)
                 {
-                    ParaboxArchipelagoPlugin.Log.LogInfo("LOAD HUB " + ParaboxResources.hub);
-                    __result = new TextAsset(ParaboxResources.hub);
-                    return false;
+                    case "levels/hub":
+                        ParaboxArchipelagoPlugin.Log.LogInfo("LOAD HUB " + ParaboxResources.hub);
+                        __result = new TextAsset(ParaboxResources.hub);
+                        return false;
+                    default:
+                        return true;
                 }
-
-                return true;
             }
             
             public static void Postfix(ref Object __result, string path)
             {
-                if (path == "localization")
+                switch (path)
                 {
-                    var text = ((__result as TextAsset)!).text;
-                    var newText = text + "\n" + ParaboxResources.local;
-                    ParaboxArchipelagoPlugin.Log.LogInfo("LOAD LOCAL " + newText);
-                    __result = new TextAsset(newText);
+                    case "localization":
+                    {
+                        var originalLocal = ((__result as TextAsset)!).text;
+                        var newLocal = originalLocal + "\n" + ParaboxResources.local;
+                        ParaboxArchipelagoPlugin.Log.LogInfo("LOAD LOCAL " + newLocal);
+                        __result = new TextAsset(newLocal);
+                        break;
+                    }
+                    case "puzzle_data":
+                        var originalPuzzleData = ((__result as TextAsset)!).text;
+                        var newPuzzleData = originalPuzzleData.Replace("a1", "a1.1Fool");
+                        ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PUZZLE DATA " + newPuzzleData);
+                        __result = new TextAsset(newPuzzleData);
+                        break;
                 }
             }
         }
