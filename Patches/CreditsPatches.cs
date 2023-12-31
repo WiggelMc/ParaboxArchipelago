@@ -31,26 +31,30 @@ namespace ParaboxArchipelago.Patches
                 Color color,
                 TextAnchor alignment,
                 int fontSize,
-                Draw.SquareFont font)
+                Draw.SquareFont font,
+                ref Rect ___drawRect
+            )
             {
                 if (text.EndsWith("Priscilla Snow"))
                 {
                     float num1 = (float) Mathf.Min(Draw.screenWidth, Draw.screenHeight);
-                    float num84 = (float)Draw.screenHeight * 0.82f;
+                    float num84 = (float)Draw.screenHeight * 0.75f;
                     float height4 = num1 * 0.12f;
                     float y2 = num84 + PauseMenu.GetLanguageStartupOffset(false);
-                    SetDrawRect(0, (double)y2, (double)Draw.screenWidth, (double)height4);
-                    Draw.DrawText(string.Format(_("Startup_AGameBy"), (object)"Patrick Traynor"), color, TextAnchor.LowerLeft, fontSize);
-                    SetDrawRect(0, (double)(y2 + (float)Draw.screenHeight * 0.06f), (double)Draw.screenWidth, (double)height4);
-                    Draw.DrawText(string.Format(_("Startup_WithSoundBy"), (object)"Priscilla Snowd"), color, TextAnchor.LowerLeft, fontSize);
+                    
+                    float margin = Draw.screenHeight * 0.05f;
+                    
+                    SetDrawRect(ref ___drawRect, margin, (double)y2, (double)Draw.screenWidth, (double)height4);
+                    Draw.DrawText(string.Format(_("AP_Startup_RandomizerBy"), (object)"Wiggel"), color, TextAnchor.LowerLeft, fontSize);
+                    SetDrawRect(ref ___drawRect,margin, (double)(y2 + (float)Draw.screenHeight * 0.06f), (double)Draw.screenWidth, (double)height4);
+                    Draw.DrawText(string.Format(_("AP_Startup_Version"), ParaboxPluginInfo.PLUGIN_VERSION), color, TextAnchor.LowerLeft, fontSize);
                 }
             }
-            
-            private static readonly MethodInfo SetDrawRectMethod = typeof(Draw).GetMethod("SetDrawRect");
-            private static void SetDrawRect(double x, double y, double width, double height)
-            {
-                typeof(Draw).GetMethod("SetDrawRect")?.Invoke(null, new object[] {x, y, width, height});
-            }
+        }
+        
+        private static void SetDrawRect(ref Rect drawRect, double x, double y, double width, double height)
+        {
+            drawRect.Set((float) (int) x, (float) (int) y, (float) ((int) (x + width) - (int) x), (float) ((int) (y + height) - (int) y));
         }
         
         private static string _(string s, string language = "") => Localization.Localize(s, language);
