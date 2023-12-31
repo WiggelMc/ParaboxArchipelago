@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.IO;
+using HarmonyLib;
 
 namespace ParaboxArchipelago.Patches
 {
@@ -35,6 +37,74 @@ namespace ParaboxArchipelago.Patches
                 {
                     ParaboxArchipelagoPlugin.Log.LogWarning("Prefs File could not be changed");
                 }
+            }
+        }
+        
+        [HarmonyPatch(typeof(TextWriter), nameof(TextWriter.WriteLine), typeof(string))]
+        public static class TextWriter_WriteLine
+        {
+            public static void Prefix(TextWriter __instance, string value)
+            {
+                if (ParaboxArchipelagoPlugin.State.IsMethodRunning(nameof(Prefs_Save)))
+                {
+                    if (value == "#")
+                    {
+                        __instance.WriteLine("ap_enable_item_tracker " + false);
+                    }
+                }
+            }
+        }
+        
+        [HarmonyPatch(typeof(StreamReader), nameof(StreamReader.ReadLine), new Type[]{})]
+        public static class StreamReader_ReadLine
+        {
+            public static void Postfix(string __result)
+            {
+                if (ParaboxArchipelagoPlugin.State.IsMethodRunning(nameof(Prefs_Load)))
+                {
+                    if (__result != null)
+                    { 
+                        string[] strArray = __result.Split(' ');
+                        switch (strArray[0]) 
+                        {
+                            case "ap_enable_item_tracker":
+                                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PREF " + bool.Parse(strArray[1]));
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Prefs), nameof(Prefs.Load))]
+        public static class Prefs_Load
+        {
+            [HarmonyPriority(-100_000)]
+            public static void Prefix()
+            {
+                ParaboxArchipelagoPlugin.State.StartMethod(nameof(Prefs_Load));
+            }
+
+            [HarmonyPriority(100_000)]
+            public static void Postfix()
+            {
+                ParaboxArchipelagoPlugin.State.EndMethod(nameof(Prefs_Load));
+            }
+        }
+        
+        [HarmonyPatch(typeof(Prefs), nameof(Prefs.Save))]
+        public static class Prefs_Save
+        {
+            [HarmonyPriority(-100_000)]
+            public static void Prefix()
+            {
+                ParaboxArchipelagoPlugin.State.StartMethod(nameof(Prefs_Save));
+            }
+
+            [HarmonyPriority(100_000)]
+            public static void Postfix()
+            {
+                ParaboxArchipelagoPlugin.State.EndMethod(nameof(Prefs_Save));
             }
         }
     }

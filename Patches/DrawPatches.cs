@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
 namespace ParaboxArchipelago.Patches
