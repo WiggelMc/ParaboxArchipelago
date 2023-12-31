@@ -17,7 +17,7 @@ namespace ParaboxArchipelago.Patches
                 }
                 else
                 {
-                    ParaboxArchipelago.Log.LogWarning("Save File could not be changed");
+                    ParaboxArchipelagoPlugin.Log.LogWarning("Save File could not be changed");
                 }
             }
         }
@@ -34,7 +34,7 @@ namespace ParaboxArchipelago.Patches
                 }
                 else
                 {
-                    ParaboxArchipelago.Log.LogWarning("Prefs File could not be changed");
+                    ParaboxArchipelagoPlugin.Log.LogWarning("Prefs File could not be changed");
                 }
             }
         }

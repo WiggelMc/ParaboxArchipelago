@@ -9,7 +9,7 @@ namespace ParaboxArchipelago
 {
     [BepInPlugin(ParaboxPluginInfo.PLUGIN_GUID, ParaboxPluginInfo.PLUGIN_NAME, ParaboxPluginInfo.PLUGIN_VERSION)]
     [BepInProcess("Patrick's Parabox.exe")]
-    public class ParaboxArchipelago : BaseUnityPlugin
+    public class ParaboxArchipelagoPlugin : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
         

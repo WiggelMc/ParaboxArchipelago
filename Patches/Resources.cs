@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using HarmonyLib;
-using Mono.Cecil;
-using MonoMod.Utils;
+﻿using System.Reflection;
+using System.Resources;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -16,10 +11,11 @@ namespace ParaboxArchipelago.Patches
         {
             public static bool Prefix(ref Object __result, string path)
             {
-                ParaboxArchipelago.Log.LogInfo("LOAD CALLED " + path);
-                if (path == "hub")
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD CALLED " + path);
+                if (path == "levels/hub")
                 {
-                    __result = new TextAsset("version 4\n#\n");
+                    ParaboxArchipelagoPlugin.Log.LogInfo("LOAD HUB " + ParaboxResources.hub);
+                    __result = new TextAsset(ParaboxResources.hub);
                     return false;
                 }
 
@@ -28,7 +24,13 @@ namespace ParaboxArchipelago.Patches
             
             public static void Postfix(ref Object __result, string path)
             {
-                
+                if (path == "localization")
+                {
+                    var text = ((__result as TextAsset)!).text;
+                    var newText = text + "\n" + ParaboxResources.local;
+                    ParaboxArchipelagoPlugin.Log.LogInfo("LOAD LOCAL " + newText);
+                    __result = new TextAsset(newText);
+                }
             }
         }
     }

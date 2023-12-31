@@ -36,6 +36,23 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\original\hub2" />
+    <None Remove="Patches\hub" />
+    <EmbeddedResource Update="Resources\ParaboxResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>data.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\ParaboxResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ParaboxResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy bin\Debug\net46\ParaboxArchipelago.dll &quot;..\..\game\BepInEx\plugins\ParaboxArchipelago.dll&quot;" />
   </Target>
