@@ -109,6 +109,7 @@ namespace ParaboxArchipelago.Patches
 
         
         private static readonly Texture2D InvisibleTexture;
+        private static readonly GUIStyle InvisibleStyle;
         
         private static readonly Texture2D DragRectTexture;
         private static readonly GUIStyle DragRectStyle;
@@ -120,6 +121,7 @@ namespace ParaboxArchipelago.Patches
             var invisibleTexture = new Texture2D(1,1);
             invisibleTexture.SetPixel(1,1,new Color(0,0,0,0));
             InvisibleTexture = invisibleTexture;
+            InvisibleStyle = GUIStyle.none;
             
             var dragRectTexture = new Texture2D(1,1);
             dragRectTexture.SetPixel(1,1,new Color(1,1,1,0.2f));
@@ -149,18 +151,21 @@ namespace ParaboxArchipelago.Patches
         
         private static Rect DrawElement(Rect relativeBounds, Action<Rect> drawContent, bool drawWindow, int windowID)
         {
+            var actualWindowID = windowID * 20;
             var screenWidth = Draw.screenWidth;
             var screenHeight = Draw.screenHeight;
             var absoluteBounds = ToAbsolute(relativeBounds, screenWidth, screenHeight);
-
+            
             Rect newRelativeBounds;
             if (drawWindow)
             {
-                var newAbsoluteBounds = GUI.Window(windowID, absoluteBounds, _ =>
+                var newAbsoluteBounds1 = DrawWindowOuterControls(absoluteBounds, actualWindowID, screenWidth, screenHeight);
+                var newAbsoluteBounds = GUI.Window(actualWindowID, newAbsoluteBounds1, _ =>
                 {
                     DrawWindowControls(absoluteBounds);
                     drawContent.Invoke(absoluteBounds);
                 }, DragWindowTexture, DragWindowStyle);
+                
                 newRelativeBounds = ToRelative(newAbsoluteBounds, screenWidth, screenHeight);
             }
             else
@@ -197,26 +202,60 @@ namespace ParaboxArchipelago.Patches
             return new Rect(
                 Mathf.Clamp(relative.x, 0, 1 - relative.width),
                 Mathf.Clamp(relative.y, 0, 1 - relative.height),
-                Mathf.Clamp01(relative.width),
-                Mathf.Clamp01(relative.height)
+                Mathf.Clamp(relative.width, 0.1f, 1),
+                Mathf.Clamp(relative.height, 0.1f, 1)
             );
         }
 
+        private const int DRAG_MARGIN = 20;
+        private const int DRAG_INSET = 20;
+        
         private static void DrawWindowControls(Rect absoluteBounds)
         {
-            const int dragMargin = 20;
             var dragRects = new[]
             {
-                new Rect(0, 0, absoluteBounds.width, dragMargin),
-                new Rect(0, absoluteBounds.height - dragMargin, absoluteBounds.width, dragMargin),
-                new Rect(0, dragMargin, dragMargin, absoluteBounds.height - 2*dragMargin),
-                new Rect(absoluteBounds.width - dragMargin, dragMargin, dragMargin, absoluteBounds.height - 2*dragMargin)
+                new Rect(DRAG_INSET, DRAG_INSET, absoluteBounds.width - 2*DRAG_INSET, DRAG_MARGIN),
+                new Rect(DRAG_INSET, absoluteBounds.height - DRAG_MARGIN - DRAG_INSET, absoluteBounds.width - 2*DRAG_INSET, DRAG_MARGIN),
+                new Rect(DRAG_INSET, DRAG_MARGIN + DRAG_INSET, DRAG_MARGIN, absoluteBounds.height - 2*DRAG_MARGIN - 2*DRAG_INSET),
+                new Rect(absoluteBounds.width - DRAG_MARGIN - DRAG_INSET, DRAG_MARGIN + DRAG_INSET, DRAG_MARGIN, absoluteBounds.height - 2*DRAG_MARGIN - 2*DRAG_INSET)
             };
             foreach (var dragRect in dragRects)
             {
                 GUI.Box(dragRect, DragRectTexture, DragRectStyle);
                 GUI.DragWindow(dragRect);
             }
+
+            
+        }
+
+        private const int RESIZE_MARGIN = 5;
+        
+        private static Rect DrawWindowOuterControls(Rect absoluteBounds, int id, float referenceWidth, float referenceHeight)
+        {
+            
+            var resizeRect = new Rect(
+                absoluteBounds.x + absoluteBounds.width,
+                absoluteBounds.y,
+                RESIZE_MARGIN,
+                absoluteBounds.height
+            );
+
+            var newResizeRect = GUI.Window(id - 1, resizeRect, _ =>
+            {
+                var rect = new Rect(
+                    0, 0, resizeRect.width, resizeRect.height
+                );
+                GUI.DragWindow(rect);
+                GUI.Box(rect, DragWindowTexture, DragRectStyle);
+            }, DragWindowTexture, DragRectStyle);
+
+            var offset = newResizeRect.x - resizeRect.x;
+            
+            return new Rect(
+                absoluteBounds.x, absoluteBounds.y,
+                Mathf.Clamp(absoluteBounds.x + absoluteBounds.width + offset, 0.1f * referenceWidth, referenceWidth) - absoluteBounds.x,
+                absoluteBounds.height
+            );
         }
 
         private static GUIStyle InitGUIStyle()
