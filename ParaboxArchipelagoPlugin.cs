@@ -13,12 +13,14 @@ namespace ParaboxArchipelago
         internal static ManualLogSource Log;
         public static MethodState MethodState;
         public static PrefState PrefState;
+        public static MenuState MenuState;
         
         private void Awake()
         {
             Log = Logger;
             MethodState = new MethodState();
             PrefState = new PrefState();
+            MenuState = new MenuState();
             
             var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
             harmony.PatchAll();
