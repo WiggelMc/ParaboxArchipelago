@@ -44,6 +44,58 @@ namespace ParaboxArchipelago.Patches
                     menuState.ConnectPasswordInput = DrawInputField(menuState.ConnectPasswordInput, nameof(MenuState.ConnectPasswordInput), new Rect(10, 70, 200, 20));
                     var connectPressed = DrawButton("Connect", "connectButtonInput", new Rect(10, 120, 200, 20));
 
+                    var gameCount = 200;
+                    
+                    menuState.RecentGamesScrollPosition = GUI.BeginScrollView(new Rect(10, 200, 300, 500), menuState.RecentGamesScrollPosition, new Rect(0, 0, 260, gameCount*30+10), false, true);
+                    foreach (var i in Enumerable.Range(0,gameCount))
+                    {
+                        GUI.Button(new Rect(0, i*30+10, 260, 20), "Game " + i);
+                    }
+                    GUI.EndScrollView();
+
+                    var windowTexture = new Texture2D(1, 1);
+                    windowTexture.SetPixel(1,1,new Color(0,0,0,0.1f));
+                    menuState.TestWindowRect = GUI.Window(0, menuState.TestWindowRect, (id) =>
+                    {
+                        var windowRect = menuState.TestWindowRect;
+                        var dragTexture = new Texture2D(1, 1);
+                        dragTexture.SetPixel(1,1,new Color(1,1,1,0.2f));
+                        var dragMargin = 20;
+                        var dragRects = new[]
+                        {
+                            new Rect(0, 0, windowRect.width, dragMargin),
+                            new Rect(0, windowRect.height - dragMargin, windowRect.width, dragMargin),
+                            new Rect(0, dragMargin, dragMargin, windowRect.height - 2*dragMargin),
+                            new Rect(windowRect.width - dragMargin, dragMargin, dragMargin, windowRect.height - 2*dragMargin)
+                        };
+                        foreach (var dragRect in dragRects)
+                        {
+                            GUI.Box(dragRect, dragTexture, new GUIStyle()
+                            {
+                                border = new RectOffset(),
+                                normal = new GUIStyleState()
+                                {
+                                    background = dragTexture
+                                }
+                            });
+                            GUI.DragWindow(dragRect);
+                        }
+                    }, windowTexture, new GUIStyle()
+                    {
+                        normal = new GUIStyleState()
+                        {
+                            background = windowTexture
+                        }
+                    });
+
+                    menuState.TestWindowRect = new Rect(
+                        Mathf.Clamp(menuState.TestWindowRect.x, 0, Draw.screenWidth - menuState.TestWindowRect.width),
+                        Mathf.Clamp(menuState.TestWindowRect.y, 0, Draw.screenHeight - menuState.TestWindowRect.height),
+                        menuState.TestWindowRect.width,
+                        menuState.TestWindowRect.height
+                    );
+                    
+                    
                     var focusedControlName = GUI.GetNameOfFocusedControl();
                     menuState.IsInTextField = focusedControlName.StartsWith(TextFieldPrefix);
                     
