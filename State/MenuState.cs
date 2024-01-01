@@ -11,5 +11,6 @@ namespace ParaboxArchipelago.State
         public float GuiKeyLastPressTime { get; set; } = 0f;
         public Vector2 RecentGamesScrollPosition { get; set; } = Vector2.zero;
         public Rect TestWindowRect { get; set; } = new(300, 10, 200, 200);
+        public bool EnableWindowMove { get; set; } = false;
     }
 }
