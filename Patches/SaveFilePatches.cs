@@ -51,10 +51,12 @@ namespace ParaboxArchipelago.Patches
                 
                 var prefState = ParaboxArchipelagoPlugin.PrefState;
 
-                WritePref(__instance, PrefState.ENABLE_ITEM_TRACKER_KEY, prefState.EnableItemTracker.ToString());
-                WritePref(__instance, PrefState.ENABLE_LOCATION_TRACKER_KEY, prefState.EnableLocationTracker.ToString());
-                WritePref(__instance, PrefState.ENABLE_ITEM_TRACKER_OVERLAY_KEY, prefState.EnableItemTrackerOverlay.ToString());
-                WritePref(__instance, PrefState.ENABLE_LOCATION_TRACKER_OVERLAY_KEY, prefState.EnableLocationTrackerOverlay.ToString());
+                WritePref(__instance, PrefState.PERSONAL_ITEM_FEED_WINDOW_KEY, prefState.PersonalItemFeedWindow.ToString());
+                WritePref(__instance, PrefState.OTHER_ITEM_FEED_WINDOW_KEY, prefState.OtherItemFeedWindow.ToString());
+                WritePref(__instance, PrefState.CHAT_WINDOW_KEY, prefState.ChatWindow.ToString());
+                WritePref(__instance, PrefState.ITEM_TRACKER_WINDOW_KEY, prefState.ItemTrackerWindow.ToString());
+                WritePref(__instance, PrefState.LOCATION_TRACKER_WINDOW_KEY, prefState.LocationTrackerWindow.ToString());
+                WritePref(__instance, PrefState.CONNECTION_WINDOW_KEY, prefState.ConnectionWindow.ToString());
             }
 
             private static void WritePref(TextWriter writer, string key, string value)
@@ -75,17 +77,23 @@ namespace ParaboxArchipelago.Patches
                 var prefState = ParaboxArchipelagoPlugin.PrefState;
                 switch (strArray[0])
                 {
-                    case PrefState.ENABLE_ITEM_TRACKER_KEY:
-                        prefState.EnableItemTracker = bool.Parse(strArray[1]);
+                    case PrefState.PERSONAL_ITEM_FEED_WINDOW_KEY:
+                        prefState.PersonalItemFeedWindow = WindowState.Parse(strArray[1]);
                         break;
-                    case PrefState.ENABLE_LOCATION_TRACKER_KEY:
-                        prefState.EnableLocationTracker = bool.Parse(strArray[1]);
+                    case PrefState.OTHER_ITEM_FEED_WINDOW_KEY:
+                        prefState.OtherItemFeedWindow = WindowState.Parse(strArray[1]);
                         break;
-                    case PrefState.ENABLE_ITEM_TRACKER_OVERLAY_KEY:
-                        prefState.EnableItemTrackerOverlay = bool.Parse(strArray[1]);
+                    case PrefState.CHAT_WINDOW_KEY:
+                        prefState.ChatWindow = WindowState.Parse(strArray[1]);
                         break;
-                    case PrefState.ENABLE_LOCATION_TRACKER_OVERLAY_KEY:
-                        prefState.EnableLocationTrackerOverlay = bool.Parse(strArray[1]);
+                    case PrefState.ITEM_TRACKER_WINDOW_KEY:
+                        prefState.ItemTrackerWindow = WindowState.Parse(strArray[1]);
+                        break;
+                    case PrefState.LOCATION_TRACKER_WINDOW_KEY:
+                        prefState.LocationTrackerWindow = WindowState.Parse(strArray[1]);
+                        break;
+                    case PrefState.CONNECTION_WINDOW_KEY:
+                        prefState.ConnectionWindow = WindowState.Parse(strArray[1]);
                         break;
                 }
             }
@@ -97,10 +105,14 @@ namespace ParaboxArchipelago.Patches
             public static void Postfix()
             {
                 var prefState = ParaboxArchipelagoPlugin.PrefState;
-                prefState.EnableItemTracker = false;
-                prefState.EnableLocationTracker = false;
-                prefState.EnableItemTrackerOverlay = false;
-                prefState.EnableItemTrackerOverlay = false;
+                
+                prefState.PersonalItemFeedWindow = PrefState.PersonalItemFeedWindowDefault;
+                prefState.OtherItemFeedWindow = PrefState.OtherItemFeedWindowDefault;
+                prefState.ChatWindow = PrefState.ChatWindowDefault;
+                prefState.ItemTrackerWindow = PrefState.ItemTrackerWindowDefault;
+                prefState.LocationTrackerWindow = PrefState.LocationTrackerWindowDefault;
+                prefState.ConnectionWindow = PrefState.ConnectionWindowDefault;
+
                 ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PREF DEFAULT");
             }
         }
