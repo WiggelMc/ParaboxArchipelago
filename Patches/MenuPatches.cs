@@ -35,6 +35,11 @@ namespace ParaboxArchipelago.Patches
                 nameof(MenuState.ConnectPasswordInput)
             }.Select(n => TextFieldPrefix + n).ToList();
 
+            private static readonly IGameWindow PersonalItemFeedGameWindow = new PersonalItemFeedGameWindow();
+            private static readonly IGameWindow OtherItemFeedGameWindow = new OtherItemFeedGameWindow();
+            private static readonly IGameWindow ChatGameWindow = new ChatGameWindow();
+            private static readonly IGameWindow ItemTrackerGameWindow = new ItemTrackerGameWindow();
+            private static readonly IGameWindow LocationTrackerGameWindow = new LocationTrackerGameWindow();
             private static readonly IGameWindow ConnectionGameWindow = new ConnectionGameWindow();
             public static void Postfix()
             {
@@ -55,8 +60,14 @@ namespace ParaboxArchipelago.Patches
                         GUI.Button(new Rect(0, i*30+10, 260, 20), "Game " + i);
                     }
                     GUI.EndScrollView();
-                    
-                    DrawWindow(ConnectionGameWindow, 0);
+
+                    var windowID = 0;
+                    DrawWindow(PersonalItemFeedGameWindow, windowID++);
+                    DrawWindow(OtherItemFeedGameWindow, windowID++);
+                    DrawWindow(ChatGameWindow, windowID++);
+                    DrawWindow(ItemTrackerGameWindow, windowID++);
+                    DrawWindow(LocationTrackerGameWindow, windowID++);
+                    DrawWindow(ConnectionGameWindow, windowID++);
                     
                     
                     var focusedControlName = GUI.GetNameOfFocusedControl();

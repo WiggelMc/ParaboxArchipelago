@@ -1,0 +1,19 @@
+﻿using ParaboxArchipelago.State;
+using UnityEngine;
+
+namespace ParaboxArchipelago.Window
+{
+    public class ItemTrackerGameWindow : IGameWindow
+    {
+        public WindowState State
+        {
+            get => ParaboxArchipelagoPlugin.PrefState.ItemTrackerWindow;
+            set => ParaboxArchipelagoPlugin.PrefState.ItemTrackerWindow = value;
+        }
+
+        public void DrawContent(Rect bounds, bool interactable)
+        {
+            
+        }
+    }
+}
