@@ -1,6 +1,10 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using ParaboxArchipelago.State;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ParaboxArchipelago.Patches
 {
@@ -14,29 +18,77 @@ namespace ParaboxArchipelago.Patches
                 return !ParaboxArchipelagoPlugin.MenuState.IsInTextField;
             }
         }
+
+        private static void OnConnectPress()
+        {
+            GUI.FocusControl("");
+        }
         
         [HarmonyPatch(typeof(World), "OnGUI")]
         public static class World_OnGUI
         {
+            private static readonly List<string> MenuNames = new[]
+            {
+                nameof(MenuState.ConnectAddressInput),
+                nameof(MenuState.ConnectSlotInput),
+                nameof(MenuState.ConnectPasswordInput)
+            }.Select(n => TextFieldPrefix + n).ToList();
+            
             public static void Postfix()
             {
                 if (World.State == World.WS.Paused)
                 {
-                    DrawInputField();
+                    var menuState = ParaboxArchipelagoPlugin.MenuState;
+                    
+                    menuState.ConnectAddressInput = DrawInputField(menuState.ConnectAddressInput, nameof(MenuState.ConnectAddressInput), new Rect(10, 10, 200, 20));
+                    menuState.ConnectSlotInput = DrawInputField(menuState.ConnectSlotInput, nameof(MenuState.ConnectSlotInput), new Rect(10, 40, 200, 20));
+                    menuState.ConnectPasswordInput = DrawInputField(menuState.ConnectPasswordInput, nameof(MenuState.ConnectPasswordInput), new Rect(10, 70, 200, 20));
+                    var connectPressed = DrawButton("Connect", "connectButtonInput", new Rect(10, 120, 200, 20));
+
+                    var focusedControlName = GUI.GetNameOfFocusedControl();
+                    menuState.IsInTextField = focusedControlName.StartsWith(TextFieldPrefix);
+                    
+                    if (Keyboard.current.enterKey.wasReleasedThisFrame)
+                        menuState.GuiKeyLastPressTime = Time.time;
+                    if (connectPressed)
+                    {
+                        OnConnectPress();
+                        return;
+                    }
+                    if (Keyboard.current.escapeKey.wasPressedThisFrame)
+                    {
+                        GUI.FocusControl("");
+                        return;
+                    }
+                    if (menuState.GuiKeyLastPressTime > Time.time) return;
+                    var focusIndex = MenuNames.IndexOf(focusedControlName);
+                    
+                    if (Keyboard.current.enterKey.wasPressedThisFrame)
+                    {
+                        ParaboxArchipelagoPlugin.Log.LogInfo("Enter Pressed");
+                        menuState.GuiKeyLastPressTime = Time.time + 1f;
+                        if (focusIndex < 2)
+                            GUI.FocusControl(MenuNames[focusIndex + 1]);
+                        else
+                            OnConnectPress();
+                    }
                 }
             }
         }
 
-        private static GUIStyle _guiStyle = InitGUIStyle();
-        private static string _textFieldPrefix = "APTextField";
+        private static readonly GUIStyle GUIStyle = InitGUIStyle();
+        private static readonly string TextFieldPrefix = "APTextField";
         
-        private static void DrawInputField()
+        private static string DrawInputField(string value, string name, Rect position)
         {
-            var menuState = ParaboxArchipelagoPlugin.MenuState;
-            GUI.SetNextControlName(_textFieldPrefix + nameof(MenuState.ConnectSlotInput));
-            menuState.ConnectSlotInput = GUI.TextField(new Rect(10, 10, 200, 20), menuState.ConnectSlotInput);
-            
-            menuState.IsInTextField = GUI.GetNameOfFocusedControl().StartsWith(_textFieldPrefix);
+            GUI.SetNextControlName(TextFieldPrefix + name);
+            return GUI.TextField(position, value);
+        }
+
+        private static bool DrawButton(string text, string name, Rect position)
+        {
+            GUI.SetNextControlName(name);
+            return GUI.Button(position, text);
         }
 
         private static GUIStyle InitGUIStyle()
