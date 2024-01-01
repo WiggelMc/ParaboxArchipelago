@@ -62,7 +62,7 @@ namespace ParaboxArchipelago.Patches
                     if (menuState.GuiKeyLastPressTime > Time.time) return;
                     var focusIndex = MenuNames.IndexOf(focusedControlName);
                     
-                    if (Keyboard.current.enterKey.wasPressedThisFrame)
+                    if (menuState.IsInTextField && Keyboard.current.enterKey.wasPressedThisFrame)
                     {
                         ParaboxArchipelagoPlugin.Log.LogInfo("Enter Pressed");
                         menuState.GuiKeyLastPressTime = Time.time + 1f;
@@ -93,7 +93,6 @@ namespace ParaboxArchipelago.Patches
         private static GUIStyle InitGUIStyle()
         {
             var guiStyle = new GUIStyle();
-            
             
             
             return guiStyle;
