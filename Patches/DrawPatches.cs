@@ -8,15 +8,9 @@ namespace ParaboxArchipelago.Patches
         [HarmonyPatch(typeof(Draw), nameof(Draw.DrawText))]
         public static class Draw_DrawText
         {
-            public static void Prefix(
-                string text,
-                Color color,
-                TextAnchor alignment,
-                ref int fontSize,
-                Draw.SquareFont font)
+            public static void Prefix(string text, ref int fontSize)
             {
-                //ParaboxArchipelagoPlugin.Log.LogInfo("DRAW TEXT " + text);
-                if (ParaboxArchipelagoPlugin.State.IsMethodRunning(nameof(Draw_DrawPortal)))
+                if (ParaboxArchipelagoPlugin.MethodState.IsMethodRunning(nameof(Draw_DrawPortal)))
                 {
                     fontSize = Mathf.RoundToInt(fontSize * GetFontScale(text));
                 }
@@ -35,31 +29,15 @@ namespace ParaboxArchipelago.Patches
         public static class Draw_DrawPortal
         {
             [HarmonyPriority(-100_000)]
-            public static void Prefix(
-                float centerX,
-                float centerY,
-                float width,
-                float height,
-                Floor floor
-            )
+            public static void Prefix()
             {
-                //var name = Hub.puzzleData[floor.SceneName].referenceName;
-                //ParaboxArchipelagoPlugin.Log.LogInfo("DRAW PORTAL START " + floor.SceneName + " " + name);
-                ParaboxArchipelagoPlugin.State.StartMethod(nameof(Draw_DrawPortal));
+                ParaboxArchipelagoPlugin.MethodState.StartMethod(nameof(Draw_DrawPortal));
             }
             
             [HarmonyPriority(100_000)]
-            public static void Postfix(
-                float centerX,
-                float centerY,
-                float width,
-                float height,
-                Floor floor
-            )
+            public static void Postfix()
             {
-                //var name = Hub.puzzleData[floor.SceneName].referenceName;
-                ParaboxArchipelagoPlugin.State.EndMethod(nameof(Draw_DrawPortal));
-                //ParaboxArchipelagoPlugin.Log.LogInfo("DRAW PORTAL END " + floor.SceneName + " " + name);
+                ParaboxArchipelagoPlugin.MethodState.EndMethod(nameof(Draw_DrawPortal));
             }
         }
     }

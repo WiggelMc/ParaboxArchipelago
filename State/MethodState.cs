@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
 
-namespace ParaboxArchipelago
+namespace ParaboxArchipelago.State
 {
-    public class ParaboxState
+    public class MethodState
     {
         private readonly Dictionary<string, int> _runningMethods = new Dictionary<string, int>();
 

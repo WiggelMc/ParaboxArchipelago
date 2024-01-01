@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using HarmonyLib;
+using ParaboxArchipelago.State;
 
 namespace ParaboxArchipelago.Patches
 {
@@ -45,13 +46,20 @@ namespace ParaboxArchipelago.Patches
         {
             public static void Prefix(TextWriter __instance, string value)
             {
-                if (ParaboxArchipelagoPlugin.State.IsMethodRunning(nameof(Prefs_Save)))
-                {
-                    if (value == "#")
-                    {
-                        __instance.WriteLine("ap_enable_item_tracker " + false);
-                    }
-                }
+                if (!ParaboxArchipelagoPlugin.MethodState.IsMethodRunning(nameof(Prefs_Save))) return;
+                if (value != "#") return;
+                
+                var prefState = ParaboxArchipelagoPlugin.PrefState;
+
+                WritePref(__instance, PrefState.ENABLE_ITEM_TRACKER_KEY, prefState.EnableItemTracker.ToString());
+                WritePref(__instance, PrefState.ENABLE_LOCATION_TRACKER_KEY, prefState.EnableLocationTracker.ToString());
+                WritePref(__instance, PrefState.ENABLE_ITEM_TRACKER_OVERLAY_KEY, prefState.EnableItemTrackerOverlay.ToString());
+                WritePref(__instance, PrefState.ENABLE_LOCATION_TRACKER_OVERLAY_KEY, prefState.EnableLocationTrackerOverlay.ToString());
+            }
+
+            private static void WritePref(TextWriter writer, string key, string value)
+            {
+                writer.WriteLine(key + " " + value);
             }
         }
         
@@ -60,18 +68,25 @@ namespace ParaboxArchipelago.Patches
         {
             public static void Postfix(string __result)
             {
-                if (ParaboxArchipelagoPlugin.State.IsMethodRunning(nameof(Prefs_Load)))
+                if (!ParaboxArchipelagoPlugin.MethodState.IsMethodRunning(nameof(Prefs_Load))) return;
+                if (__result == null) return;
+                
+                var strArray = __result.Split(' ');
+                var prefState = ParaboxArchipelagoPlugin.PrefState;
+                switch (strArray[0])
                 {
-                    if (__result != null)
-                    { 
-                        string[] strArray = __result.Split(' ');
-                        switch (strArray[0]) 
-                        {
-                            case "ap_enable_item_tracker":
-                                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PREF " + bool.Parse(strArray[1]));
-                                break;
-                        }
-                    }
+                    case PrefState.ENABLE_ITEM_TRACKER_KEY:
+                        prefState.EnableItemTracker = bool.Parse(strArray[1]);
+                        break;
+                    case PrefState.ENABLE_LOCATION_TRACKER_KEY:
+                        prefState.EnableLocationTracker = bool.Parse(strArray[1]);
+                        break;
+                    case PrefState.ENABLE_ITEM_TRACKER_OVERLAY_KEY:
+                        prefState.EnableItemTrackerOverlay = bool.Parse(strArray[1]);
+                        break;
+                    case PrefState.ENABLE_LOCATION_TRACKER_OVERLAY_KEY:
+                        prefState.EnableLocationTrackerOverlay = bool.Parse(strArray[1]);
+                        break;
                 }
             }
         }
@@ -81,6 +96,11 @@ namespace ParaboxArchipelago.Patches
         {
             public static void Postfix()
             {
+                var prefState = ParaboxArchipelagoPlugin.PrefState;
+                prefState.EnableItemTracker = false;
+                prefState.EnableLocationTracker = false;
+                prefState.EnableItemTrackerOverlay = false;
+                prefState.EnableItemTrackerOverlay = false;
                 ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PREF DEFAULT");
             }
         }
@@ -91,13 +111,13 @@ namespace ParaboxArchipelago.Patches
             [HarmonyPriority(-100_000)]
             public static void Prefix()
             {
-                ParaboxArchipelagoPlugin.State.StartMethod(nameof(Prefs_Load));
+                ParaboxArchipelagoPlugin.MethodState.StartMethod(nameof(Prefs_Load));
             }
 
             [HarmonyPriority(100_000)]
             public static void Postfix()
             {
-                ParaboxArchipelagoPlugin.State.EndMethod(nameof(Prefs_Load));
+                ParaboxArchipelagoPlugin.MethodState.EndMethod(nameof(Prefs_Load));
             }
         }
         
@@ -107,13 +127,13 @@ namespace ParaboxArchipelago.Patches
             [HarmonyPriority(-100_000)]
             public static void Prefix()
             {
-                ParaboxArchipelagoPlugin.State.StartMethod(nameof(Prefs_Save));
+                ParaboxArchipelagoPlugin.MethodState.StartMethod(nameof(Prefs_Save));
             }
 
             [HarmonyPriority(100_000)]
             public static void Postfix()
             {
-                ParaboxArchipelagoPlugin.State.EndMethod(nameof(Prefs_Save));
+                ParaboxArchipelagoPlugin.MethodState.EndMethod(nameof(Prefs_Save));
             }
         }
     }

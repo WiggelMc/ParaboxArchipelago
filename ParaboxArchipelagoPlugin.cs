@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using ParaboxArchipelago.Patches;
+using ParaboxArchipelago.State;
 
 namespace ParaboxArchipelago
 {
@@ -10,12 +11,15 @@ namespace ParaboxArchipelago
     public class ParaboxArchipelagoPlugin : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
-        internal static ParaboxState State;
+        public static MethodState MethodState;
+        public static PrefState PrefState;
         
         private void Awake()
         {
             Log = Logger;
-            State = new ParaboxState();
+            MethodState = new MethodState();
+            PrefState = new PrefState();
+            
             var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
             harmony.PatchAll();
             ResourcesPatches.Resources_Load.Patch(harmony);
