@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using ParaboxArchipelago.State;
+using ParaboxArchipelago.Window;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,7 +34,8 @@ namespace ParaboxArchipelago.Patches
                 nameof(MenuState.ConnectSlotInput),
                 nameof(MenuState.ConnectPasswordInput)
             }.Select(n => TextFieldPrefix + n).ToList();
-            
+
+            private static readonly IGameWindow ConnectionGameWindow = new ConnectionGameWindow();
             public static void Postfix()
             {
                 if (World.State == World.WS.Paused)
@@ -54,11 +56,7 @@ namespace ParaboxArchipelago.Patches
                     }
                     GUI.EndScrollView();
                     
-                    
-                    menuState.ConnectionWindow.RelativeRect = DrawElement(menuState.ConnectionWindow.RelativeRect, bounds =>
-                    {
-                        
-                    }, true, 0);
+                    DrawWindow(ConnectionGameWindow, 0);
                     
                     
                     var focusedControlName = GUI.GetNameOfFocusedControl();
@@ -92,7 +90,23 @@ namespace ParaboxArchipelago.Patches
             }
         }
 
-        private static readonly GUIStyle GUIStyle = InitGUIStyle();
+        public static void DrawWindow(IGameWindow window, int id)
+        {
+            var state = World.State switch
+            {
+                World.WS.Playing => window.State.OverlayState,
+                World.WS.Paused => window.State.MenuState,
+                _ => WindowState.WindowInteractionState.Hidden
+            };
+            
+            var drawWindow = ParaboxArchipelagoPlugin.MenuState.EnableWindowMove;
+            var interactable = state == WindowState.WindowInteractionState.Interact && !drawWindow;
+            
+            if (state == WindowState.WindowInteractionState.Hidden && !drawWindow) return;
+            
+            window.State.RelativeRect = DrawElement(window.State.RelativeRect, bounds => window.DrawContent(bounds, interactable), drawWindow, id);
+        }
+        
         private static readonly string TextFieldPrefix = "APTextField";
         
         private static string DrawInputField(string value, string name, Rect position)
@@ -146,8 +160,6 @@ namespace ParaboxArchipelago.Patches
                 }
             };
         }
-        
-        private const string WINDOW_NAME_PREFIX = "Window_";
         
         private static Rect DrawElement(Rect relativeBounds, Action<Rect> drawContent, bool drawWindow, int windowID)
         {
@@ -276,14 +288,6 @@ namespace ParaboxArchipelago.Patches
             var newYMax = Mathf.Clamp(absoluteBounds.yMax + offsets[1], absoluteBounds.y + 0.1f * referenceHeight, referenceHeight);
             
             return new Rect(newX, newY, newXMax - newX, newYMax - newY);
-        }
-
-        private static GUIStyle InitGUIStyle()
-        {
-            var guiStyle = new GUIStyle();
-            
-            
-            return guiStyle;
         }
     }
 }

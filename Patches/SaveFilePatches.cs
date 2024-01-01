@@ -75,6 +75,7 @@ namespace ParaboxArchipelago.Patches
                 
                 var strArray = __result.Split(' ');
                 var prefState = ParaboxArchipelagoPlugin.PrefState;
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD PREF: " + strArray[0]);
                 switch (strArray[0])
                 {
                     case PrefState.PERSONAL_ITEM_FEED_WINDOW_KEY:
