@@ -12,12 +12,12 @@ namespace ParaboxArchipelago.State
         public Vector2 RecentGamesScrollPosition { get; set; } = Vector2.zero;
         public bool EnableWindowMove { get; set; } = false;
 
-        public WindowState PersonalItemFeedWindowRect { get; set; } = new(0.2f, 0, 0.2f, 0.2f);
-        public WindowState OtherItemFeedWindowRect { get; set; } = new(0.4f, 0, 0.2f, 0.2f);
-        public WindowState ChatWindowRect { get; set; } = new(0.6f, 0, 0.2f, 0.2f);
-        public WindowState ItemTrackerWindowRect { get; set; } = new(0.8f, 0, 0.2f, 0.2f);
-        public WindowState LocationTrackerWindowRect { get; set; } = new(0.8f, 0.2f, 0.2f, 0.2f);
-        public WindowState ConnectionWindowRect { get; set; } = new(0, 0.2f, 0.2f, 0.2f);
+        public WindowState PersonalItemFeedWindow { get; set; } = new(0.2f, 0, 0.2f, 0.2f);
+        public WindowState OtherItemFeedWindow { get; set; } = new(0.4f, 0, 0.2f, 0.2f);
+        public WindowState ChatWindow { get; set; } = new(0.6f, 0, 0.2f, 0.2f);
+        public WindowState ItemTrackerWindow { get; set; } = new(0.8f, 0, 0.2f, 0.2f);
+        public WindowState LocationTrackerWindow { get; set; } = new(0.8f, 0.2f, 0.2f, 0.2f);
+        public WindowState ConnectionWindow { get; set; } = new(0, 0.2f, 0.2f, 0.2f);
         
         public class WindowState
         {

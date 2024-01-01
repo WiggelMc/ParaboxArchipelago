@@ -55,7 +55,7 @@ namespace ParaboxArchipelago.Patches
                     GUI.EndScrollView();
                     
                     
-                    menuState.ConnectionWindowRect.RelativeRect = DrawElement(menuState.ConnectionWindowRect.RelativeRect, bounds =>
+                    menuState.ConnectionWindow.RelativeRect = DrawElement(menuState.ConnectionWindow.RelativeRect, bounds =>
                     {
                         
                     }, true, 0);
@@ -147,7 +147,7 @@ namespace ParaboxArchipelago.Patches
             };
         }
         
-        
+        private const string WINDOW_NAME_PREFIX = "Window_";
         
         private static Rect DrawElement(Rect relativeBounds, Action<Rect> drawContent, bool drawWindow, int windowID)
         {
@@ -228,34 +228,54 @@ namespace ParaboxArchipelago.Patches
             
         }
 
-        private const int RESIZE_MARGIN = 5;
+        private const int RESIZE_MARGIN = 10;
+        private const int RESIZE_EDGE = 15;
         
         private static Rect DrawWindowOuterControls(Rect absoluteBounds, int id, float referenceWidth, float referenceHeight)
         {
-            
-            var resizeRect = new Rect(
-                absoluteBounds.x + absoluteBounds.width,
-                absoluteBounds.y,
-                RESIZE_MARGIN,
-                absoluteBounds.height
-            );
-
-            var newResizeRect = GUI.Window(id - 1, resizeRect, _ =>
+            var resizeRects = new[]
             {
-                var rect = new Rect(
-                    0, 0, resizeRect.width, resizeRect.height
-                );
-                GUI.DragWindow(rect);
-                GUI.Box(rect, DragWindowTexture, DragRectStyle);
-            }, DragWindowTexture, DragRectStyle);
+                new Rect( absoluteBounds.x + RESIZE_EDGE, absoluteBounds.y, absoluteBounds.width - 2*RESIZE_EDGE, RESIZE_MARGIN),
+                new Rect( absoluteBounds.x + RESIZE_EDGE, absoluteBounds.y + absoluteBounds.height - RESIZE_MARGIN, absoluteBounds.width - 2*RESIZE_EDGE, RESIZE_MARGIN),
+                new Rect(absoluteBounds.x, absoluteBounds.y + RESIZE_EDGE, RESIZE_MARGIN, absoluteBounds.height - 2*RESIZE_EDGE),
+                new Rect(absoluteBounds.x + absoluteBounds.width - RESIZE_MARGIN, absoluteBounds.y + RESIZE_EDGE, RESIZE_MARGIN, absoluteBounds.height - 2*RESIZE_EDGE)
+            };
+            var offsets = new float[resizeRects.Length];
 
-            var offset = newResizeRect.x - resizeRect.x;
+            for (var i = 0; i < resizeRects.Length; i++)
+            {
+                var resizeRect = resizeRects[i];
+                var newID = id + 1 + i;
+                var newResizeRect = GUI.Window(newID, resizeRect, _ =>
+                {
+                    var rect = new Rect(
+                        0, 0, resizeRect.width, resizeRect.height
+                    );
+                    GUI.DragWindow(rect);
+                    GUI.Box(rect, DragWindowTexture, DragRectStyle);
+                }, DragWindowTexture, DragRectStyle);
+                GUI.BringWindowToFront(newID);
+
+                switch (i)
+                {
+                    case 0:
+                    case 1:
+                        offsets[i] = newResizeRect.y - resizeRect.y;
+                        break;
+                    case 2:
+                    case 3:
+                        offsets[i] = newResizeRect.x - resizeRect.x;
+                        break;
+                }
+                
+            }
             
-            return new Rect(
-                absoluteBounds.x, absoluteBounds.y,
-                Mathf.Clamp(absoluteBounds.x + absoluteBounds.width + offset, 0.1f * referenceWidth, referenceWidth) - absoluteBounds.x,
-                absoluteBounds.height
-            );
+            var newX = Mathf.Clamp(absoluteBounds.x + offsets[2], 0, absoluteBounds.xMax - 0.1f * referenceWidth);
+            var newY = Mathf.Clamp(absoluteBounds.y + offsets[0], 0, absoluteBounds.yMax - 0.1f * referenceHeight);
+            var newXMax = Mathf.Clamp(absoluteBounds.xMax + offsets[3], absoluteBounds.x + 0.1f * referenceWidth, referenceWidth);
+            var newYMax = Mathf.Clamp(absoluteBounds.yMax + offsets[1], absoluteBounds.y + 0.1f * referenceHeight, referenceHeight);
+            
+            return new Rect(newX, newY, newXMax - newX, newYMax - newY);
         }
 
         private static GUIStyle InitGUIStyle()
