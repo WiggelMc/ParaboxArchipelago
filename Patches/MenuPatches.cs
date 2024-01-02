@@ -16,7 +16,8 @@ namespace ParaboxArchipelago.Patches
         {
             public static bool Prefix()
             {
-                return !ParaboxArchipelagoPlugin.MenuState.IsInTextField;
+                var menuState = ParaboxArchipelagoPlugin.MenuState;
+                return !(menuState.IsInTextField || menuState.APOptionsPageEnabled);
             }
         }
 
@@ -93,7 +94,14 @@ namespace ParaboxArchipelago.Patches
                     }
                     if (Keyboard.current.escapeKey.wasPressedThisFrame)
                     {
-                        GUI.FocusControl("");
+                        if (menuState.IsInTextField)
+                        {
+                            GUI.FocusControl("");
+                        }
+                        else if (menuState.APOptionsPageEnabled)
+                        {
+                            CloseApOptions();
+                        }
                         return;
                     }
                     if (menuState.GuiKeyLastPressTime > Time.time) return;
@@ -110,6 +118,17 @@ namespace ParaboxArchipelago.Patches
                     }
                 }
             }
+        }
+
+        public static void OpenAPOptions()
+        {
+            ParaboxArchipelagoPlugin.MenuState.APOptionsPageEnabled = true;
+        }
+
+        public static void CloseApOptions()
+        {
+            Prefs.Save();
+            ParaboxArchipelagoPlugin.MenuState.APOptionsPageEnabled = false;
         }
 
         public static void DrawWindow(IGameWindow window, int id)
