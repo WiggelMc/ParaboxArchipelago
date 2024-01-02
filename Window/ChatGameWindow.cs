@@ -11,7 +11,7 @@ namespace ParaboxArchipelago.Window
             set => ParaboxArchipelagoPlugin.PrefState.ChatWindow = value;
         }
 
-        public void DrawContent(Rect bounds, bool interactable)
+        public void DrawContent(Rect bounds, bool isInteractable, bool isOverlay)
         {
             
         }

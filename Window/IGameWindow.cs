@@ -6,6 +6,6 @@ namespace ParaboxArchipelago.Window
     public interface IGameWindow
     {
         WindowState State { get; set; }
-        void DrawContent(Rect bounds, bool interactable);
+        void DrawContent(Rect bounds, bool isInteractable, bool isOverlay);
     }
 }

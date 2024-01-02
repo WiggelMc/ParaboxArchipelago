@@ -14,7 +14,8 @@ namespace ParaboxArchipelago.Patches
 
         public static void DrawWindow(IGameWindow window, int id)
         {
-            var state = WorldAccessor.GetWorldState() switch
+            var worldState = WorldAccessor.GetWorldState();
+            var windowState = worldState switch
             {
                 WorldAccessor.GameWorldState.Playing => window.State.OverlayState,
                 WorldAccessor.GameWorldState.Paused => window.State.MenuState,
@@ -22,11 +23,18 @@ namespace ParaboxArchipelago.Patches
             };
             
             var drawWindow = ParaboxArchipelagoPlugin.MenuState.APOptionsPageEnabled;
-            var interactable = state == WindowState.WindowInteractionState.Interact && !drawWindow;
-            
-            if (state == WindowState.WindowInteractionState.Hidden && !drawWindow) return;
-            
-            window.State.RelativeRect = DrawDraggableWindow(window.State.RelativeRect, bounds => window.DrawContent(bounds, interactable), drawWindow, id);
+            var isInteractable = windowState == WindowState.WindowInteractionState.Interact && !drawWindow;
+            var isOverlay = worldState == WorldAccessor.GameWorldState.Playing;
+
+            if (windowState != WindowState.WindowInteractionState.Hidden || drawWindow)
+            {
+                window.State.RelativeRect = DrawDraggableWindow(
+                    window.State.RelativeRect,
+                    bounds => window.DrawContent(bounds, isInteractable, isOverlay),
+                    drawWindow,
+                    id
+                );
+            }
         }
 
         private static Rect DrawDraggableWindow(Rect relativeBounds, Action<Rect> drawContent, bool drawWindow, int windowID)
@@ -39,18 +47,21 @@ namespace ParaboxArchipelago.Patches
             Rect newRelativeBounds;
             if (drawWindow)
             {
-                var newAbsoluteBounds1 = DrawWindowOuterControls(absoluteBounds, actualWindowID, screenWidth, screenHeight);
-                var newAbsoluteBounds = GUI.Window(actualWindowID, newAbsoluteBounds1, _ =>
+                var newAbsoluteBounds = DrawWindowOuterControls(absoluteBounds, actualWindowID, screenWidth, screenHeight);
+                newAbsoluteBounds = GUI.Window(actualWindowID, newAbsoluteBounds, _ =>
                 {
-                    DrawWindowControls(absoluteBounds);
-                    drawContent.Invoke(absoluteBounds);
+                    var insideAbsoluteBounds = ResetPos(absoluteBounds);
+                    DrawWindowControls(insideAbsoluteBounds);
+                    drawContent.Invoke(insideAbsoluteBounds);
                 }, MenuStyle.DragWindowTexture, MenuStyle.DragWindowStyle);
                 
                 newRelativeBounds = ToRelative(newAbsoluteBounds, screenWidth, screenHeight);
             }
             else
             {
-                drawContent.Invoke(absoluteBounds);
+                GUI.BeginGroup(absoluteBounds);
+                drawContent.Invoke(ResetPos(absoluteBounds));
+                GUI.EndGroup();
                 newRelativeBounds = relativeBounds;
             }
 
@@ -75,6 +86,11 @@ namespace ParaboxArchipelago.Patches
                 relative.width * referenceWidth,
                 relative.height * referenceHeight
             );
+        }
+        
+        private static Rect ResetPos(Rect rect)
+        {
+            return new Rect(0,0,rect.width, rect.height);
         }
 
         private static Rect ClampRelative(Rect relative)
