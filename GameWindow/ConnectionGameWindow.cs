@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
+using ParaboxArchipelago.Style;
 using UnityEngine;
 
 namespace ParaboxArchipelago.GameWindow

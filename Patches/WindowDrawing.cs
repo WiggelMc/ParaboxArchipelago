@@ -1,6 +1,7 @@
 ﻿using System;
 using ParaboxArchipelago.State;
 using ParaboxArchipelago.GameWindow;
+using ParaboxArchipelago.Style;
 using UnityEngine;
 
 namespace ParaboxArchipelago.Patches
@@ -117,6 +118,12 @@ namespace ParaboxArchipelago.Patches
                 GUI.Box(dragRect, MenuStyle.DragRectTexture, MenuStyle.DragRectStyle);
                 GUI.DragWindow(dragRect);
             }
+
+            //TODO: FIX (Inject DrawControls Method)
+            var window = ParaboxArchipelagoPlugin.PrefState.ConnectionWindow;
+            GUILayout.BeginArea(absoluteBounds);
+            window.OverlayState = (WindowState.WindowInteractionState) GUILayout.SelectionGrid((int)window.OverlayState, new [] {"A", "B", "C"}, 3, new GUIStyle("toggle"));
+            GUILayout.EndArea();
         }
 
         private static Rect DrawWindowOuterControls(Rect absoluteBounds, int id, float referenceWidth, float referenceHeight)

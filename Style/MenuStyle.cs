@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ParaboxArchipelago.Patches
+namespace ParaboxArchipelago.Style
 {
     public static class MenuStyle
     {
