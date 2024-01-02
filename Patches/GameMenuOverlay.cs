@@ -41,11 +41,11 @@ namespace ParaboxArchipelago.Window
             {
                 if (menuState.APOptionsPageEnabled)
                 {
-                    MenuPatches.CloseApOptions();
+                    MenuStateAccessor.CloseApOptions();
                 }
                 else
                 {
-                    MenuPatches.OpenAPOptions();
+                    MenuStateAccessor.OpenAPOptions();
                 }
                 
                 ParaboxArchipelagoPlugin.Log.LogInfo("AP OPTIONS OPEN: " + menuState.APOptionsPageEnabled);
