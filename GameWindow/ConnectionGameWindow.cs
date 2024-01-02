@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
 using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
@@ -66,7 +67,13 @@ namespace ParaboxArchipelago.GameWindow
         private static void Connect()
         {
             var menuState = ParaboxArchipelagoPlugin.MenuState;
-            APSessionAccessor.Connect(menuState.ConnectAddressInput, menuState.ConnectSlotInput, menuState.ConnectPasswordInput);
+            var address = menuState.ConnectAddressInput;
+            var slot = menuState.ConnectSlotInput;
+            var password = menuState.ConnectPasswordInput;
+            var connectionTask = Task.Run(() =>
+            {
+                APSessionAccessor.Connect(address, slot, password);
+            });
         }
     }
     
