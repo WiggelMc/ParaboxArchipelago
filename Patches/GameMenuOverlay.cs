@@ -1,9 +1,6 @@
-﻿using System.IO;
-using ParaboxArchipelago.Patches;
-using ParaboxArchipelago.State;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace ParaboxArchipelago.WindowDraw
+namespace ParaboxArchipelago.Patches
 {
     public static class GameMenuOverlay
     {

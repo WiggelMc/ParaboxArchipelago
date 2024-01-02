@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using ParaboxArchipelago.State;
-using ParaboxArchipelago.WindowDraw;
+using ParaboxArchipelago.GameWindow;
 using UnityEngine;
 using UnityEngine.InputSystem;
 // ReSharper disable RedundantAssignment

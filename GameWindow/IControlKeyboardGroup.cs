@@ -1,4 +1,4 @@
-﻿namespace ParaboxArchipelago.WindowDraw
+﻿namespace ParaboxArchipelago.GameWindow
 {
     public interface IControlKeyboardGroup
     {

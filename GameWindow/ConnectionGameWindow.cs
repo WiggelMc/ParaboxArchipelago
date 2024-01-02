@@ -5,7 +5,7 @@ using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 using UnityEngine;
 
-namespace ParaboxArchipelago.WindowDraw
+namespace ParaboxArchipelago.GameWindow
 {
     public class ConnectionGameWindow : IGameWindow
     {
