@@ -5,7 +5,7 @@ using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 using UnityEngine;
 
-namespace ParaboxArchipelago.Window
+namespace ParaboxArchipelago.WindowDraw
 {
     public class ConnectionGameWindow : IGameWindow
     {
@@ -61,16 +61,12 @@ namespace ParaboxArchipelago.Window
             GUI.EndScrollView();
 
             GUI.enabled = previousGUIState;
-
-            ParaboxArchipelagoPlugin.Log.LogInfo(ParaboxArchipelagoPlugin.APState.Session?.Socket.Uri);
-            ParaboxArchipelagoPlugin.Log.LogInfo(ParaboxArchipelagoPlugin.APState.Session?.Socket.Connected);
         }
 
         private static void Connect()
         {
-            var apState = ParaboxArchipelagoPlugin.APState;
             var menuState = ParaboxArchipelagoPlugin.MenuState;
-            apState.Session = ArchipelagoSessionFactory.CreateSession(menuState.ConnectAddressInput);
+            APSessionAccessor.Connect(menuState.ConnectAddressInput, menuState.ConnectSlotInput, menuState.ConnectPasswordInput);
         }
     }
     

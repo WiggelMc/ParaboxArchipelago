@@ -1,6 +1,6 @@
 ﻿using System;
 using ParaboxArchipelago.State;
-using ParaboxArchipelago.Window;
+using ParaboxArchipelago.WindowDraw;
 using UnityEngine;
 
 namespace ParaboxArchipelago.Patches

@@ -1,7 +1,7 @@
 ﻿using ParaboxArchipelago.State;
 using UnityEngine;
 
-namespace ParaboxArchipelago.Window
+namespace ParaboxArchipelago.WindowDraw
 {
     public interface IGameWindow
     {

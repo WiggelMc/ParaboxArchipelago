@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ParaboxArchipelago.Window;
+using ParaboxArchipelago.WindowDraw;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

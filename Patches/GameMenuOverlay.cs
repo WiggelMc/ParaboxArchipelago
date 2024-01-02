@@ -3,7 +3,7 @@ using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 using UnityEngine;
 
-namespace ParaboxArchipelago.Window
+namespace ParaboxArchipelago.WindowDraw
 {
     public static class GameMenuOverlay
     {

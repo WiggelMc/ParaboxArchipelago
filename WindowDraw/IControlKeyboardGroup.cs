@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ParaboxArchipelago.Patches
+﻿namespace ParaboxArchipelago.WindowDraw
 {
     public interface IControlKeyboardGroup
     {
