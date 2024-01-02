@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Archipelago.MultiClient.Net;
 using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 using UnityEngine;
@@ -60,11 +61,16 @@ namespace ParaboxArchipelago.Window
             GUI.EndScrollView();
 
             GUI.enabled = previousGUIState;
+
+            ParaboxArchipelagoPlugin.Log.LogInfo(ParaboxArchipelagoPlugin.APState.Session?.Socket.Uri);
+            ParaboxArchipelagoPlugin.Log.LogInfo(ParaboxArchipelagoPlugin.APState.Session?.Socket.Connected);
         }
 
         private static void Connect()
         {
-            
+            var apState = ParaboxArchipelagoPlugin.APState;
+            var menuState = ParaboxArchipelagoPlugin.MenuState;
+            apState.Session = ArchipelagoSessionFactory.CreateSession(menuState.ConnectAddressInput);
         }
     }
     

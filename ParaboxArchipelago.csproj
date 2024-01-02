@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="5.0.6" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
@@ -54,6 +55,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy bin\Debug\net46\ParaboxArchipelago.dll &quot;..\..\game\BepInEx\plugins\ParaboxArchipelago.dll&quot;" />
+    <Exec Command="(if exist ..\..\game\BepInEx\plugins\ParaboxArchipelago\ rmdir /s /q ..\..\game\BepInEx\plugins\ParaboxArchipelago\) &amp;&amp; xcopy /E bin\Debug\net46\ &quot;..\..\game\BepInEx\plugins\ParaboxArchipelago\&quot;" />
   </Target>
 </Project>

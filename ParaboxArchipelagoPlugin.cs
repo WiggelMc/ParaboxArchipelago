@@ -14,6 +14,7 @@ namespace ParaboxArchipelago
         public static MethodState MethodState;
         public static PrefState PrefState;
         public static MenuState MenuState;
+        public static APState APState;
         
         private void Awake()
         {
@@ -21,6 +22,7 @@ namespace ParaboxArchipelago
             MethodState = new MethodState();
             PrefState = new PrefState();
             MenuState = new MenuState();
+            APState = new APState();
             
             var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
             harmony.PatchAll();
