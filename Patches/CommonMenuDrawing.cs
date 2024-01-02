@@ -42,13 +42,15 @@ namespace ParaboxArchipelago.Patches
         public static void HandleMenuControlInput()
         {
             var menuState = ParaboxArchipelagoPlugin.MenuState;
+
+            var escapePressed = Keyboard.current.escapeKey.isPressed && !menuState.EscapeKeyPressed;
+            var enterPressed = Keyboard.current.enterKey.isPressed && !menuState.EnterKeyPressed;
+            UpdateInput();
             
             var focusedControlName = GUI.GetNameOfFocusedControl();
             menuState.IsInTextField = focusedControlName.StartsWith(TEXT_FIELD_PREFIX);
             
-            if (Keyboard.current.enterKey.wasReleasedThisFrame)
-                menuState.GuiKeyLastPressTime = Time.time;
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (escapePressed)
             {
                 if (menuState.IsInTextField)
                 {
@@ -60,28 +62,31 @@ namespace ParaboxArchipelago.Patches
                 }
                 return;
             }
-            if (menuState.GuiKeyLastPressTime > Time.time) return;
-            
-            
-            var result = InputGroups
-                .Select(group => new ControlSearchResult(group, Array.IndexOf(group.Items, focusedControlName)))
-                .FirstOrDefault( r => r.Index != -1);
-            
-            ParaboxArchipelagoPlugin.Log.LogInfo(result.Index);
-            
-            if (result.Group != null)
+
+            if (enterPressed && menuState.IsInTextField)
             {
-                if (menuState.IsInTextField && Keyboard.current.enterKey.wasPressedThisFrame)
+                var result = InputGroups
+                    .Select(group => new ControlSearchResult(group, Array.IndexOf(group.Items, focusedControlName)))
+                    .FirstOrDefault( r => r.Index != -1);
+            
+                ParaboxArchipelagoPlugin.Log.LogInfo(result.Index);
+            
+                if (result.Group != null)
                 {
-                    ParaboxArchipelagoPlugin.Log.LogInfo("Enter Pressed");
-                    menuState.GuiKeyLastPressTime = Time.time + 1f;
                     if (result.Index < result.Group.Items.Length - 1)
                         GUI.FocusControl(result.Group.Items[result.Index + 1]);
                     else
                         GUI.FocusControl("");
-                
                 }
             }
+        }
+
+        public static void UpdateInput()
+        {
+            var menuState = ParaboxArchipelagoPlugin.MenuState;
+            
+            menuState.EnterKeyPressed = Keyboard.current.enterKey.isPressed;
+            menuState.EscapeKeyPressed = Keyboard.current.escapeKey.isPressed;
         }
     }
 }

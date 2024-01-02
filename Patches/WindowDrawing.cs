@@ -14,10 +14,10 @@ namespace ParaboxArchipelago.Patches
 
         public static void DrawWindow(IGameWindow window, int id)
         {
-            var state = World.State switch
+            var state = WorldAccessor.GetWorldState() switch
             {
-                World.WS.Playing => window.State.OverlayState,
-                World.WS.Paused => window.State.MenuState,
+                WorldAccessor.GameWorldState.Playing => window.State.OverlayState,
+                WorldAccessor.GameWorldState.Paused => window.State.MenuState,
                 _ => WindowState.WindowInteractionState.Hidden
             };
             

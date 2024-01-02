@@ -28,7 +28,8 @@ namespace ParaboxArchipelago.Patches
             public static bool Prefix()
             {
                 var menuState = ParaboxArchipelagoPlugin.MenuState;
-                return !(menuState.IsInTextField);
+                var isPaused = WorldAccessor.GetWorldState() == WorldAccessor.GameWorldState.Paused;
+                return isPaused || !(menuState.IsInTextField);
             }
         }
         
