@@ -11,6 +11,6 @@ namespace ParaboxArchipelago.State
         public bool IsInTextField { get; set; } = false;
         public float GuiKeyLastPressTime { get; set; } = 0f;
         public Vector2 RecentGamesScrollPosition { get; set; } = Vector2.zero;
-        public bool EnableWindowMove { get; set; } = true;
+        public bool APOptionsPageEnabled { get; set; } = true;
     }
 }

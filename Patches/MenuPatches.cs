@@ -61,6 +61,11 @@ namespace ParaboxArchipelago.Patches
                     }
                     GUI.EndScrollView();
 
+                    ////
+                    ////
+                    ////
+                    ////
+                    
                     var windowID = 0;
                     DrawWindow(PersonalItemFeedGameWindow, windowID++);
                     DrawWindow(OtherItemFeedGameWindow, windowID++);
@@ -68,10 +73,16 @@ namespace ParaboxArchipelago.Patches
                     DrawWindow(ItemTrackerGameWindow, windowID++);
                     DrawWindow(LocationTrackerGameWindow, windowID++);
                     DrawWindow(ConnectionGameWindow, windowID++);
-                    
+
+                    GameMenuOverlay.DrawMenuOverlay();
                     
                     var focusedControlName = GUI.GetNameOfFocusedControl();
                     menuState.IsInTextField = focusedControlName.StartsWith(TextFieldPrefix);
+                    
+                    /////
+                    /////
+                    /////
+                    /////
                     
                     if (Keyboard.current.enterKey.wasReleasedThisFrame)
                         menuState.GuiKeyLastPressTime = Time.time;
@@ -110,7 +121,7 @@ namespace ParaboxArchipelago.Patches
                 _ => WindowState.WindowInteractionState.Hidden
             };
             
-            var drawWindow = ParaboxArchipelagoPlugin.MenuState.EnableWindowMove;
+            var drawWindow = ParaboxArchipelagoPlugin.MenuState.APOptionsPageEnabled;
             var interactable = state == WindowState.WindowInteractionState.Interact && !drawWindow;
             
             if (state == WindowState.WindowInteractionState.Hidden && !drawWindow) return;
