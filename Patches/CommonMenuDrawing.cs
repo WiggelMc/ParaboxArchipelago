@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ParaboxArchipelago.GameWindow;
+using ParaboxArchipelago.State;
+using ParaboxArchipelago.Style;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,6 +39,25 @@ namespace ParaboxArchipelago.Patches
         {
             GUI.SetNextControlName(name);
             return GUI.Button(position, text);
+        }
+
+        public static void DrawCommonMenuControls(Rect bounds, IGameWindow window)
+        {
+            var state = window.State;
+            GUILayout.BeginArea(bounds);
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginVertical(MenuStyle.SolidDarkStyle);
+            GUILayout.Label("Overlay");
+            state.OverlayState = (WindowState.WindowInteractionState) GUILayout.SelectionGrid((int)state.OverlayState, new [] {"Hidden", "View", "Interactable"}, 3, new GUIStyle("toggle"));
+            GUILayout.Label("Menu");
+            state.MenuState = (WindowState.WindowInteractionState) GUILayout.SelectionGrid((int)state.MenuState, new [] {"Hidden", "View", "Interactable"}, 3, new GUIStyle("toggle"));
+            GUILayout.EndVertical();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndArea();
         }
 
         public static void HandleMenuControlInput()

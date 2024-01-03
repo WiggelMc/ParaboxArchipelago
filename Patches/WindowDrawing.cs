@@ -32,13 +32,14 @@ namespace ParaboxArchipelago.Patches
                 window.State.RelativeRect = DrawDraggableWindow(
                     window.State.RelativeRect,
                     bounds => window.DrawContent(bounds, isInteractable, isOverlay),
+                    window.DrawControls,
                     drawWindow,
                     id
                 );
             }
         }
 
-        private static Rect DrawDraggableWindow(Rect relativeBounds, Action<Rect> drawContent, bool drawWindow, int windowID)
+        private static Rect DrawDraggableWindow(Rect relativeBounds, Action<Rect> drawContent, Action<Rect> drawControls, bool drawWindow, int windowID)
         {
             var actualWindowID = windowID * 20;
             var screenWidth = Draw.screenWidth;
@@ -52,8 +53,9 @@ namespace ParaboxArchipelago.Patches
                 newAbsoluteBounds = GUI.Window(actualWindowID, newAbsoluteBounds, _ =>
                 {
                     var insideAbsoluteBounds = ResetPos(absoluteBounds);
-                    DrawWindowControls(insideAbsoluteBounds);
                     drawContent.Invoke(insideAbsoluteBounds);
+                    DrawWindowControls(insideAbsoluteBounds);
+                    drawControls(insideAbsoluteBounds);
                 }, MenuStyle.DragWindowTexture, MenuStyle.DragWindowStyle);
                 
                 newRelativeBounds = ToRelative(newAbsoluteBounds, screenWidth, screenHeight);
@@ -118,12 +120,6 @@ namespace ParaboxArchipelago.Patches
                 GUI.Box(dragRect, MenuStyle.DragRectTexture, MenuStyle.DragRectStyle);
                 GUI.DragWindow(dragRect);
             }
-
-            //TODO: FIX (Inject DrawControls Method)
-            var window = ParaboxArchipelagoPlugin.PrefState.ConnectionWindow;
-            GUILayout.BeginArea(absoluteBounds);
-            window.OverlayState = (WindowState.WindowInteractionState) GUILayout.SelectionGrid((int)window.OverlayState, new [] {"A", "B", "C"}, 3, new GUIStyle("toggle"));
-            GUILayout.EndArea();
         }
 
         private static Rect DrawWindowOuterControls(Rect absoluteBounds, int id, float referenceWidth, float referenceHeight)

@@ -1,4 +1,5 @@
-﻿using ParaboxArchipelago.State;
+﻿using ParaboxArchipelago.Patches;
+using ParaboxArchipelago.State;
 using UnityEngine;
 
 namespace ParaboxArchipelago.GameWindow
@@ -14,6 +15,11 @@ namespace ParaboxArchipelago.GameWindow
         public void DrawContent(Rect bounds, bool isInteractable, bool isOverlay)
         {
             
+        }
+
+        public void DrawControls(Rect bounds)
+        {
+            CommonMenuDrawing.DrawCommonMenuControls(bounds, this);
         }
     }
 }

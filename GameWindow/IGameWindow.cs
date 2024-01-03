@@ -7,5 +7,6 @@ namespace ParaboxArchipelago.GameWindow
     {
         WindowState State { get; set; }
         void DrawContent(Rect bounds, bool isInteractable, bool isOverlay);
+        void DrawControls(Rect bounds);
     }
 }

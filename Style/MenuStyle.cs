@@ -10,6 +10,8 @@ namespace ParaboxArchipelago.Style
         public static readonly GUIStyle DragRectStyle;
         public static readonly Texture2D DragWindowTexture;
         public static readonly GUIStyle DragWindowStyle;
+        public static readonly Texture2D SolidDarkTexture;
+        public static readonly GUIStyle SolidDarkStyle;
         
         static MenuStyle()
         {
@@ -38,6 +40,18 @@ namespace ParaboxArchipelago.Style
                 normal = new GUIStyleState()
                 {
                     background = dragWindowTexture
+                }
+            };
+            
+            var solidDarkTexture = new Texture2D(1,1);
+            solidDarkTexture.SetPixel(1,1,new Color(0.06f,0.1f,0.1f));
+            SolidDarkTexture = solidDarkTexture;
+            SolidDarkStyle = new GUIStyle
+            {
+                border = new RectOffset(),
+                normal = new GUIStyleState
+                {
+                    background = solidDarkTexture
                 }
             };
         }

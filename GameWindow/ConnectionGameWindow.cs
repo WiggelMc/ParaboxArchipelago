@@ -65,6 +65,11 @@ namespace ParaboxArchipelago.GameWindow
             GUI.enabled = previousGUIState;
         }
 
+        public void DrawControls(Rect bounds)
+        {
+            CommonMenuDrawing.DrawCommonMenuControls(bounds, this);
+        }
+
         private static void Connect()
         {
             var menuState = ParaboxArchipelagoPlugin.MenuState;
