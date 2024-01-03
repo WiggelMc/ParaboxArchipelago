@@ -72,7 +72,75 @@ namespace ParaboxArchipelago.Patches
         [HarmonyPatch(typeof(LoadLevel), "DoHubModifications")]
         public static class LoadLevel_DoHubModifications
         {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase original)
+            
+            public static CodeInstruction LogInstruction(CodeInstruction instruction, int sourceInstructionOffset)
+            {
+                ParaboxArchipelagoPlugin.Log.LogInfo($"IL_{sourceInstructionOffset:x4}: {instruction}");
+                return instruction;
+            }
+            
+            public interface IInjectionParameter
+            {
+                public IEnumerable<CodeInstruction> Load();
+            }
+            
+            public class LocalVarParam : IInjectionParameter
+            {
+                private readonly int _localIndex;
+
+                public LocalVarParam(LocalVariableInfo localVariable)
+                {
+                    _localIndex = localVariable.LocalIndex;
+                }
+
+                public IEnumerable<CodeInstruction> Load()
+                {
+                    yield return new CodeInstruction(OpCodes.Ldloc, _localIndex);
+                }
+            }
+            
+            public class LocalVarRefParam : IInjectionParameter
+            {
+                private readonly int _localIndex;
+
+                public LocalVarRefParam(LocalVariableInfo localVariable)
+                {
+                    _localIndex = localVariable.LocalIndex;
+                }
+
+                public IEnumerable<CodeInstruction> Load()
+                {
+                    yield return new CodeInstruction(OpCodes.Ldloca, _localIndex);
+                }
+            }
+            
+            public static IEnumerable<CodeInstruction> InjectMethod(CodeInstruction nextInstruction, int sourceInstructionOffset, MethodInfo method, IInjectionParameter[] parameters)
+            {
+                ParaboxArchipelagoPlugin.Log.LogInfo("IL_INJECT_START");
+                var beforeInstruction = new CodeInstruction(OpCodes.Nop)
+                {
+                    labels = nextInstruction.labels.ToList()
+                };
+                yield return LogInstruction(beforeInstruction, sourceInstructionOffset);
+                yield return LogInstruction(new CodeInstruction(OpCodes.Nop), sourceInstructionOffset);
+                foreach (var parameter in parameters)
+                {
+                    foreach (var loadInstruction in parameter.Load())
+                    {
+                        yield return LogInstruction(loadInstruction, sourceInstructionOffset);
+                    }
+                }
+                yield return LogInstruction(new CodeInstruction(OpCodes.Callvirt, method), sourceInstructionOffset);
+                yield return LogInstruction(new CodeInstruction(OpCodes.Nop), sourceInstructionOffset);
+                ParaboxArchipelagoPlugin.Log.LogInfo("IL_INJECT_END");
+
+                nextInstruction.labels.Clear();
+                yield return LogInstruction(nextInstruction, sourceInstructionOffset);
+            }
+            
+            
+            
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase original)
             {
                 var localVariables = original.GetMethodBody()!.LocalVariables;
                 foreach (var variable in localVariables)
@@ -95,151 +163,31 @@ namespace ParaboxArchipelago.Patches
                 {
                     if (sourceInstructionOffset == 0x0174)
                     {
-                        var beforeInstruction = new CodeInstruction(OpCodes.Nop)
-                        {
-                            labels = instruction.labels.ToList()
-                        };
-                        yield return beforeInstruction;
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        yield return new CodeInstruction(OpCodes.Ldloc, blockVar.LocalIndex);
-                        yield return new CodeInstruction(OpCodes.Ldloca, solvedVar.LocalIndex);
-                        yield return new CodeInstruction(OpCodes.Ldloca, requiredVar.LocalIndex);
-                        yield return new CodeInstruction(
-                            OpCodes.Callvirt,
-                            AccessTools.Method(typeof(LoadLevelInjections), nameof(LoadLevelInjections.LoadWorldLevelCompletionCounts))
+                        var loadWorldLevelCompletionCounts = InjectMethod(
+                            instruction,
+                            sourceInstructionOffset,
+                            AccessTools.Method(
+                                typeof(LoadLevelInjections),
+                                nameof(LoadLevelInjections.LoadWorldLevelCompletionCounts)
+                            ),
+                            new IInjectionParameter[]
+                            {
+                                new LocalVarParam(blockVar),
+                                new LocalVarRefParam(solvedVar),
+                                new LocalVarRefParam(requiredVar)
+                            }
                         );
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        ParaboxArchipelagoPlugin.Log.LogInfo($"IL_INJECT");
 
-                        instruction.labels.Clear();
-                    }
-                    ParaboxArchipelagoPlugin.Log.LogInfo($"IL_{sourceInstructionOffset:x4}: {instruction}");
-                    yield return instruction;
-                    sourceInstructionOffset++;
-                }
-                /*
-                var unlockScenePrefix = "*clear_count_";
-                var index = 0;
-                foreach (var instruction in instructions)
-                {
-                    if (il.ILOffset == 0x0427)
-                    {
-                        var endLabel = il.DefineLabel();
-
-                        var blockVar = "block";
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, blockVar);
-                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Block), nameof(Block.unlockerScene)));
-                        yield return new CodeInstruction(OpCodes.Ldstr, unlockScenePrefix);
-                        yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(string), nameof(string.StartsWith), new []{ typeof(string), typeof(string) }));
-                        var startsWithPrefixVar = il.DeclareLocal(typeof(bool));
-                        yield return new CodeInstruction(OpCodes.Stloc_S, startsWithPrefixVar);
-
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, startsWithPrefixVar);
-                        yield return new CodeInstruction(OpCodes.Brfalse_S, endLabel);
-
-
-                        yield return new CodeInstruction(OpCodes.Nop);
-
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, blockVar);
-                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Block), nameof(Block.unlockerScene)));
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte)unlockScenePrefix.Length);
-                        yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(string), nameof(string.Substring), new []{ typeof(string), typeof(int) }));
-                        var varRequired = il.DeclareLocal(typeof(int));
-                        yield return new CodeInstruction(OpCodes.Ldloca_S, varRequired);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(int), nameof(int.TryParse), new []{ typeof(string), typeof(int) }));
-                        var varParsed = il.DeclareLocal(typeof(bool));
-                        yield return new CodeInstruction(OpCodes.Stloc_S, varParsed);
-
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, varParsed);
-                        var varParsed2 = il.DeclareLocal(typeof(bool));
-                        yield return new CodeInstruction(OpCodes.Stloc_S, varParsed2);
-
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, varParsed2);
-                        yield return new CodeInstruction(OpCodes.Brfalse_S, endLabel);
-
-
-                        yield return new CodeInstruction(OpCodes.Nop);
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, varRequired);
-                        var varNum1 = "num1";
-                        yield return new CodeInstruction(OpCodes.Stloc_S, varNum1);
-
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        var endLabelPoint = new CodeInstruction(OpCodes.Nop);
-                        endLabelPoint.labels.Add(endLabel);
-                        yield return endLabelPoint;
-
-
-                        index = 0x0463;
-                    }
-                    else if (il.ILOffset is > 0x0427 and < 0x0463)
-                    {
-
+                        foreach (var loadWorldLevelCompletionCountsInstruction in loadWorldLevelCompletionCounts)
+                        {
+                            yield return loadWorldLevelCompletionCountsInstruction;
+                        }
                     }
                     else
                     {
-                        yield return instruction;
-                        index += instruction.opcode.Size;
+                        yield return LogInstruction(instruction, sourceInstructionOffset);
                     }
-                }
-                */
-            }
-            
-            
-            public static void Postfix()
-            {
-                return;
-                var unlockScenePrefix = "*clear_count_";
-                var alreadyPlayedAnimation = false;
-                for (int index1 = World.blocks.Count - 1; index1 >= 0; --index1)
-                {
-                    Block block = World.blocks[index1];
-                    /*
-                    var num1 = 0;
-                    if (block.unlockerScene.StartsWith("*clear_count_"))
-                    {
-                        var parsed = int.TryParse(block.unlockerScene.Substring(13), out var required);
-                        if (parsed)
-                        {
-                            num1 = required;
-                        }
-                    }
-                    */
-                    if (block.SubLevel == null && block.unlockerScene != null && block.unlockerScene.StartsWith(unlockScenePrefix))
-                    {
-                        var parsed = int.TryParse(block.unlockerScene.Substring(unlockScenePrefix.Length), out var required);
-                        if (parsed)
-                        {
-                            block.numRequired = required;
-                            block.numSolved = Math.Min(block.numSolvedUncapped, required);
-                            ParaboxArchipelagoPlugin.Log.LogInfo("EXIT: " + block.numSolved + " / " + block.numRequired + "  : " + block.OuterLevel.hubAreaName);
-                            if (block.numSolved >= required)
-                            {
-                                if (!World.wallUnlockAnimPlayed.ContainsKey(block.OuterLevel.hubAreaName) && World.hubLoaded)
-                                {
-                                    
-                                    ParaboxArchipelagoPlugin.Log.LogInfo("PATH A");
-                                    block.Unlocking = true;
-                                    World.unlocking = true;
-                                    if (alreadyPlayedAnimation)
-                                        block.UnlockingSuppressSound = true;
-                                    alreadyPlayedAnimation = true;
-                                    World.wallUnlockAnimPlayed[block.OuterLevel.hubAreaName] = true;
-                                }
-                                else
-                                {
-                                    ParaboxArchipelagoPlugin.Log.LogInfo("PATH B");
-                                    block.OuterLevel.blocks[block.xpos, block.ypos] = (Block) null;
-                                    block.OuterLevel.blockList.Remove(block);
-                                    World.blocks.RemoveAt(index1);
-                                }
-                            }
-                        }
-                    }
+                    sourceInstructionOffset++;
                 }
             }
         }
