@@ -2,25 +2,20 @@
 using System.IO;
 using HarmonyLib;
 using ParaboxArchipelago.State;
+using UnityEngine;
 
 namespace ParaboxArchipelago.Patches
 {
     public static class SaveFilePatches
     {
+        public const string AP_DATA_DIR = "archipelago";
+        
         [HarmonyPatch(typeof(SaveFile), "GetSaveFilePath")]
         public static class SaveFile_GetSaveFilePath
         {
             public static void Postfix(ref string __result, int slot)
             {
-                var suffix = slot + ".txt";
-                if (__result.EndsWith(suffix))
-                {
-                    __result = __result.Substring(0, __result.Length - suffix.Length) + "_ap_rando_SEEDGOESHERE.txt";
-                }
-                else
-                {
-                    ParaboxArchipelagoPlugin.Log.LogWarning("Save File could not be changed");
-                }
+                __result = Path.Combine(Application.persistentDataPath, AP_DATA_DIR, "save_ap_rando_SEEDGOESHERE.txt");
             }
         }
     
@@ -29,15 +24,7 @@ namespace ParaboxArchipelago.Patches
         {
             public static void Postfix(ref string __result)
             {
-                const string suffix = ".txt";
-                if (__result.EndsWith(suffix))
-                {
-                    __result = __result.Substring(0, __result.Length - suffix.Length) + "_ap_rando.txt";
-                }
-                else
-                {
-                    ParaboxArchipelagoPlugin.Log.LogWarning("Prefs File could not be changed");
-                }
+                __result = Path.Combine(Application.persistentDataPath, AP_DATA_DIR, "prefs_ap_rando.txt");
             }
         }
         

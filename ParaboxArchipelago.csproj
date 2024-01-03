@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\original\hub2" />
+    <EmbeddedResource Include="Resources\original\hub5" />
     <None Remove="Patches\hub" />
     <EmbeddedResource Update="Resources\ParaboxResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
