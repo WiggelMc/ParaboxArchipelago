@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 using HarmonyLib.Tools;
+using ParaboxInjectionLib;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -84,6 +85,12 @@ namespace ParaboxArchipelago.Patches
                 }
 
                 var sourceInstructionOffset = 0;
+
+                yield return new CodeInstruction(
+                    OpCodes.Callvirt,
+                    AccessTools.Method(typeof(LoadLevelInjections), nameof(LoadLevelInjections.TestInjection))
+                );
+                
                 foreach (var instruction in instructions)
                 {
                     instruction.labels.Add(il.DefineLabel());
@@ -230,6 +237,33 @@ namespace ParaboxArchipelago.Patches
             public static void Postfix(ref Object __result, string path, Type systemTypeInstance)
             {
                 
+            }
+        }
+        
+        [HarmonyPatch(typeof(LoadLevelInjections), nameof(LoadLevelInjections.TestInjection))]
+        public static class LoadLevelInjections_TestInjection
+        {
+            public static void Prefix()
+            {
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
             }
         }
     }

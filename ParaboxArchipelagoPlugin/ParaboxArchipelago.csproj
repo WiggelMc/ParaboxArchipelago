@@ -54,6 +54,10 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ParaboxInjectionLib\ParaboxInjectionLib.csproj" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="(if exist ..\..\..\game\BepInEx\plugins\ParaboxArchipelago\ rmdir /s /q ..\..\..\game\BepInEx\plugins\ParaboxArchipelago\) &amp;&amp; xcopy /E bin\Debug\net46\ &quot;..\..\..\game\BepInEx\plugins\ParaboxArchipelago\&quot;" />
   </Target>
