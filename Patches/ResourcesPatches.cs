@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using HarmonyLib.Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -36,7 +38,7 @@ namespace ParaboxArchipelago.Patches
                 switch (path)
                 {
                     case "levels/hub":
-                        ParaboxArchipelagoPlugin.Log.LogInfo("LOAD HUB " + ParaboxResources.hub);
+                        //ParaboxArchipelagoPlugin.Log.LogInfo("LOAD HUB " + ParaboxResources.hub);
                         __result = new TextAsset(ParaboxResources.hub);
                         return false;
                     default:
@@ -70,9 +72,26 @@ namespace ParaboxArchipelago.Patches
         [HarmonyPatch(typeof(LoadLevel), "DoHubModifications")]
         public static class LoadLevel_DoHubModifications
         {
-            /*
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase original)
             {
+                var localVariables = original.GetMethodBody()?.LocalVariables;
+                if (localVariables != null)
+                {
+                    foreach (var variable in localVariables)
+                    {
+                        ParaboxArchipelagoPlugin.Log.LogInfo("VAR: " + variable + " : " + variable.LocalType?.Name);
+                    }
+                }
+
+                var sourceInstructionOffset = 0;
+                foreach (var instruction in instructions)
+                {
+                    instruction.labels.Add(il.DefineLabel());
+                    ParaboxArchipelagoPlugin.Log.LogInfo($"IL_{sourceInstructionOffset:x4}: {instruction}");
+                    yield return instruction;
+                    sourceInstructionOffset++;
+                }
+                /*
                 var unlockScenePrefix = "*clear_count_";
                 var index = 0;
                 foreach (var instruction in instructions)
@@ -141,11 +160,13 @@ namespace ParaboxArchipelago.Patches
                         index += instruction.opcode.Size;
                     }
                 }
+                */
             }
-            */
+            
             
             public static void Postfix()
             {
+                return;
                 var unlockScenePrefix = "*clear_count_";
                 var alreadyPlayedAnimation = false;
                 for (int index1 = World.blocks.Count - 1; index1 >= 0; --index1)
@@ -169,21 +190,28 @@ namespace ParaboxArchipelago.Patches
                         {
                             block.numRequired = required;
                             block.numSolved = Math.Min(block.numSolvedUncapped, required);
-                            if (World.wallUnlockAnimPlayed.ContainsKey(block.OuterLevel.hubAreaName) && !alreadyPlayedAnimation || SaveFile.Current.UnlockPuzzles || !World.hubLoaded)
+                            ParaboxArchipelagoPlugin.Log.LogInfo("EXIT: " + block.numSolved + " / " + block.numRequired + "  : " + block.OuterLevel.hubAreaName);
+                            if (block.numSolved >= required)
                             {
-                                block.Unlocking = true;
-                                World.unlocking = true;
-                                if (alreadyPlayedAnimation)
-                                    block.UnlockingSuppressSound = true;
-                                alreadyPlayedAnimation = true;
+                                if (!World.wallUnlockAnimPlayed.ContainsKey(block.OuterLevel.hubAreaName) && World.hubLoaded)
+                                {
+                                    
+                                    ParaboxArchipelagoPlugin.Log.LogInfo("PATH A");
+                                    block.Unlocking = true;
+                                    World.unlocking = true;
+                                    if (alreadyPlayedAnimation)
+                                        block.UnlockingSuppressSound = true;
+                                    alreadyPlayedAnimation = true;
+                                    World.wallUnlockAnimPlayed[block.OuterLevel.hubAreaName] = true;
+                                }
+                                else
+                                {
+                                    ParaboxArchipelagoPlugin.Log.LogInfo("PATH B");
+                                    block.OuterLevel.blocks[block.xpos, block.ypos] = (Block) null;
+                                    block.OuterLevel.blockList.Remove(block);
+                                    World.blocks.RemoveAt(index1);
+                                }
                             }
-                            else
-                            {
-                                block.OuterLevel.blocks[block.xpos, block.ypos] = (Block) null;
-                                block.OuterLevel.blockList.Remove(block);
-                                World.blocks.RemoveAt(index1);
-                            }
-                            World.wallUnlockAnimPlayed[block.OuterLevel.hubAreaName] = true;
                         }
                     }
                 }

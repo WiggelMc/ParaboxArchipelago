@@ -24,6 +24,7 @@ namespace ParaboxArchipelago
             MenuState = new MenuState();
             APState = new APState();
             
+            Harmony.DEBUG = true;
             var harmony = new Harmony(ParaboxPluginInfo.PLUGIN_GUID);
             harmony.PatchAll();
             ResourcesPatches.Resources_Load.Patch(harmony);
