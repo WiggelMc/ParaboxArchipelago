@@ -69,21 +69,21 @@ namespace ParaboxArchipelago.Patches
             }
         }
         
-        
         [HarmonyPatch(typeof(LoadLevel), "DoHubModifications")]
         public static class LoadLevel_DoHubModifications
         {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase original)
             {
-                var localVariables = original.GetMethodBody()?.LocalVariables;
-                if (localVariables != null)
+                var localVariables = original.GetMethodBody()!.LocalVariables;
+                foreach (var variable in localVariables)
                 {
-                    foreach (var variable in localVariables)
-                    {
-                        ParaboxArchipelagoPlugin.Log.LogInfo("VAR: " + variable + " : " + variable.LocalType?.Name);
-                    }
+                    ParaboxArchipelagoPlugin.Log.LogInfo("VAR: " + variable + " : " + variable.LocalType?.Name);
                 }
 
+                var blockVar = localVariables[19]; //block
+                var requiredVar = localVariables[23]; //num1
+                var solvedVar = localVariables[24]; //num2
+                
                 var sourceInstructionOffset = 0;
 
                 yield return new CodeInstruction(
@@ -93,7 +93,25 @@ namespace ParaboxArchipelago.Patches
                 
                 foreach (var instruction in instructions)
                 {
-                    instruction.labels.Add(il.DefineLabel());
+                    if (sourceInstructionOffset == 0x0174)
+                    {
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Ldloc, blockVar.LocalIndex);
+                        yield return new CodeInstruction(OpCodes.Ldloca, solvedVar.LocalIndex);
+                        yield return new CodeInstruction(OpCodes.Ldloca, requiredVar.LocalIndex);
+                        yield return new CodeInstruction(
+                            OpCodes.Callvirt,
+                            AccessTools.Method(typeof(LoadLevelInjections), nameof(LoadLevelInjections.LoadWorldLevelCompletionCounts))
+                        );
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        yield return new CodeInstruction(OpCodes.Nop);
+                        ParaboxArchipelagoPlugin.Log.LogInfo($"IL_INJECT");
+                    }
                     ParaboxArchipelagoPlugin.Log.LogInfo($"IL_{sourceInstructionOffset:x4}: {instruction}");
                     yield return instruction;
                     sourceInstructionOffset++;
@@ -245,25 +263,30 @@ namespace ParaboxArchipelago.Patches
         {
             public static void Prefix()
             {
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
-                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED");
+                
+            }
+        }
+        
+        [HarmonyPatch(typeof(LoadLevelInjections), nameof(LoadLevelInjections.LoadWorldLevelCompletionCounts))]
+        public static class LoadLevelInjections_LoadWorldLevelCompletionCounts
+        {
+            public static void Postfix(ref object block, ref int solvedUncapped, ref int required)
+            {
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION RUN");
+                var blockVar = (Block) block;
+                ParaboxArchipelagoPlugin.Log.LogInfo("LOAD INJECTION CALLED: " + blockVar.OuterLevel.hubAreaName);
+                ParaboxArchipelagoPlugin.Log.LogInfo("OLD EXIT: " + blockVar.numSolved + " / " + blockVar.numRequired + "  : " + blockVar.OuterLevel.hubAreaName);
+                
+                var unlockScenePrefix = "*clear_count_";
+                if (blockVar.unlockerScene .StartsWith(unlockScenePrefix))
+                {
+                    var parsed = int.TryParse(blockVar.unlockerScene.Substring(unlockScenePrefix.Length), out var newRequired);
+                    if (parsed)
+                    {
+                        ParaboxArchipelagoPlugin.Log.LogInfo("EXIT: " + blockVar.numSolved + " / " + blockVar.numRequired + "  : " + blockVar.OuterLevel.hubAreaName);
+                        required = newRequired;
+                    }
+                }
             }
         }
     }
