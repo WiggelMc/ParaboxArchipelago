@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net;
+using ParaboxArchipelago.GameOption;
 using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 using ParaboxArchipelago.Style;
@@ -28,6 +29,16 @@ namespace ParaboxArchipelago.GameWindow
         {
             get => ParaboxArchipelagoPlugin.PrefState.ConnectionWindow;
             set => ParaboxArchipelagoPlugin.PrefState.ConnectionWindow = value;
+        }
+
+        public IGameOption[] Options { get; set; }
+
+        public ConnectionGameWindow()
+        {
+            Options = CommonMenuDrawing.GetCommonGameOptions(this).Concat(new IGameOption[]
+            {
+                
+            }).ToArray();
         }
 
         public void DrawContent(Rect bounds, bool isInteractable, bool isOverlay)
@@ -63,11 +74,6 @@ namespace ParaboxArchipelago.GameWindow
             GUI.EndScrollView();
 
             GUI.enabled = previousGUIState;
-        }
-
-        public void DrawControls(Rect bounds)
-        {
-            CommonMenuDrawing.DrawCommonMenuControls(bounds, this);
         }
 
         private static void Connect()

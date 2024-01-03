@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ParaboxArchipelago.GameOption;
 using ParaboxArchipelago.GameWindow;
 using ParaboxArchipelago.State;
 using ParaboxArchipelago.Style;
@@ -40,19 +41,36 @@ namespace ParaboxArchipelago.Patches
             GUI.SetNextControlName(name);
             return GUI.Button(position, text);
         }
-
-        public static void DrawCommonMenuControls(Rect bounds, IGameWindow window)
+        
+        public static IGameOption[] GetCommonGameOptions(IGameWindow window)
         {
-            var state = window.State;
+            return new IGameOption[] {
+                new RadioOption(
+                    "Menu",
+                    new []{"Hidden", "View", "Interactable"},
+                    v => window.State.MenuState = (WindowState.WindowInteractionState)v,
+                    () => (int)window.State.MenuState
+                ),
+                new RadioOption(
+                    "Overlay",
+                    new []{"Hidden", "View", "Interactable"},
+                    v => window.State.OverlayState = (WindowState.WindowInteractionState)v,
+                    () => (int)window.State.OverlayState
+                )
+            };
+        }
+
+        public static void DrawMenuControls(Rect bounds, IGameWindow window)
+        {
             GUILayout.BeginArea(bounds);
             GUILayout.FlexibleSpace();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical(MenuStyle.SolidDarkStyle);
-            GUILayout.Label("Overlay");
-            state.OverlayState = (WindowState.WindowInteractionState) GUILayout.SelectionGrid((int)state.OverlayState, new [] {"Hidden", "View", "Interactable"}, 3, new GUIStyle("toggle"));
-            GUILayout.Label("Menu");
-            state.MenuState = (WindowState.WindowInteractionState) GUILayout.SelectionGrid((int)state.MenuState, new [] {"Hidden", "View", "Interactable"}, 3, new GUIStyle("toggle"));
+            foreach (var gameOption in window.Options)
+            {
+                gameOption.Draw();
+            }
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();

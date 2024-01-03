@@ -32,7 +32,7 @@ namespace ParaboxArchipelago.Patches
                 window.State.RelativeRect = DrawDraggableWindow(
                     window.State.RelativeRect,
                     bounds => window.DrawContent(bounds, isInteractable, isOverlay),
-                    window.DrawControls,
+                    bounds => CommonMenuDrawing.DrawMenuControls(bounds, window),
                     drawWindow,
                     id
                 );

@@ -1,4 +1,6 @@
-﻿using ParaboxArchipelago.Patches;
+﻿using System.Linq;
+using ParaboxArchipelago.GameOption;
+using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 using UnityEngine;
 
@@ -12,14 +14,19 @@ namespace ParaboxArchipelago.GameWindow
             set => ParaboxArchipelagoPlugin.PrefState.OtherItemFeedWindow = value;
         }
 
+        public IGameOption[] Options { get; set; }
+
+        public OtherItemFeedGameWindow()
+        {
+            Options = CommonMenuDrawing.GetCommonGameOptions(this).Concat(new IGameOption[]
+            {
+                
+            }).ToArray();
+        }
+
         public void DrawContent(Rect bounds, bool isInteractable, bool isOverlay)
         {
             
-        }
-
-        public void DrawControls(Rect bounds)
-        {
-            CommonMenuDrawing.DrawCommonMenuControls(bounds, this);
         }
     }
 }
