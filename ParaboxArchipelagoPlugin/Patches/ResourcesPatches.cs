@@ -95,9 +95,11 @@ namespace ParaboxArchipelago.Patches
                 {
                     if (sourceInstructionOffset == 0x0174)
                     {
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        yield return new CodeInstruction(OpCodes.Nop);
+                        var beforeInstruction = new CodeInstruction(OpCodes.Nop)
+                        {
+                            labels = instruction.labels.ToList()
+                        };
+                        yield return beforeInstruction;
                         yield return new CodeInstruction(OpCodes.Nop);
                         yield return new CodeInstruction(OpCodes.Ldloc, blockVar.LocalIndex);
                         yield return new CodeInstruction(OpCodes.Ldloca, solvedVar.LocalIndex);
@@ -107,10 +109,9 @@ namespace ParaboxArchipelago.Patches
                             AccessTools.Method(typeof(LoadLevelInjections), nameof(LoadLevelInjections.LoadWorldLevelCompletionCounts))
                         );
                         yield return new CodeInstruction(OpCodes.Nop);
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        yield return new CodeInstruction(OpCodes.Nop);
-                        yield return new CodeInstruction(OpCodes.Nop);
                         ParaboxArchipelagoPlugin.Log.LogInfo($"IL_INJECT");
+
+                        instruction.labels.Clear();
                     }
                     ParaboxArchipelagoPlugin.Log.LogInfo($"IL_{sourceInstructionOffset:x4}: {instruction}");
                     yield return instruction;
