@@ -24,15 +24,15 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\game\Patrick's Parabox_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\game\Patrick's Parabox_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
-      <HintPath>..\..\game\Patrick's Parabox_Data\Managed\netstandard.dll</HintPath>
+      <HintPath>..\..\..\game\Patrick's Parabox_Data\Managed\netstandard.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.InputSystem">
-      <HintPath>..\..\game\Patrick's Parabox_Data\Managed\Unity.InputSystem.dll</HintPath>
+      <HintPath>..\..\..\game\Patrick's Parabox_Data\Managed\Unity.InputSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -55,6 +55,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="(if exist ..\..\game\BepInEx\plugins\ParaboxArchipelago\ rmdir /s /q ..\..\game\BepInEx\plugins\ParaboxArchipelago\) &amp;&amp; xcopy /E bin\Debug\net46\ &quot;..\..\game\BepInEx\plugins\ParaboxArchipelago\&quot;" />
+    <Exec Command="(if exist ..\..\..\game\BepInEx\plugins\ParaboxArchipelago\ rmdir /s /q ..\..\..\game\BepInEx\plugins\ParaboxArchipelago\) &amp;&amp; xcopy /E bin\Debug\net46\ &quot;..\..\..\game\BepInEx\plugins\ParaboxArchipelago\&quot;" />
   </Target>
 </Project>

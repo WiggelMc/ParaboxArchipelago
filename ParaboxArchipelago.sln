@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParaboxInjectionLib", "ParaboxInjectionLib\ParaboxInjectionLib.csproj", "{B6355E5B-1EC2-4F4D-B068-C863FCC30443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParaboxArchipelago", "ParaboxArchipelagoPlugin\ParaboxArchipelago.csproj", "{932649FF-BF6C-45B5-8416-1CD74939D4A8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6355E5B-1EC2-4F4D-B068-C863FCC30443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6355E5B-1EC2-4F4D-B068-C863FCC30443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6355E5B-1EC2-4F4D-B068-C863FCC30443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6355E5B-1EC2-4F4D-B068-C863FCC30443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{932649FF-BF6C-45B5-8416-1CD74939D4A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{932649FF-BF6C-45B5-8416-1CD74939D4A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{932649FF-BF6C-45B5-8416-1CD74939D4A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{932649FF-BF6C-45B5-8416-1CD74939D4A8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
