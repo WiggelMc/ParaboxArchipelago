@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using ParaboxArchipelago.LevelGenerator;
 using ParaboxArchipelago.Patches;
 using ParaboxArchipelago.State;
 
@@ -30,6 +31,7 @@ namespace ParaboxArchipelago
             MusicPatches.FMODSquare_AreaNameToFMODIndex.Patch();
             
             Log.LogInfo($"Plugin {ParaboxPluginInfo.PLUGIN_GUID} is loaded!");
+            ParaboxRandom.TestRandom();
         }
     }
 }
