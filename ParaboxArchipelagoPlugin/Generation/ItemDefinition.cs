@@ -1,25 +1,25 @@
-﻿namespace ParaboxArchipelago.Generation
+﻿using System;
+using System.Collections.Generic;
+
+namespace ParaboxArchipelago.Generation
 {
-    public class ItemDefinition
+    public static class ItemDefinition
     {
         public enum SingleValues
         {
             Disabled,
             Unlocked,
-            Single,
-            Progressive,
-            Seperate
+            Single
         }
-        
+
         public enum ProgressiveValues
         {
             Disabled,
             Unlocked,
             Single,
-            Progressive,
-            Seperate
+            Progressive
         }
-        
+
         public enum SeperateValues
         {
             Disabled,
@@ -29,35 +29,54 @@
             Seperate
         }
 
-        public class Item : IRegistered
+        public interface ISingleItemLoader
         {
-            
-        }
-        
-        public class OptionItem<TOption, TEnum> : Item 
-            where TOption : IOption<TEnum>
-            where TEnum : System.Enum
-        {
-            
+            Item Single(Registry r);
+            IOption<SingleValues> Option(Registry r);
         }
 
-        public class SingleItem<TOption, TEnum> : OptionItem<TOption, TEnum>
-            where TOption : IOption<TEnum>
-            where TEnum : System.Enum
+        public interface IProgressiveItemLoader
         {
-            
+            Item Single(Registry r);
+            ProgressiveItem Progressive(Registry r);
+            int Count { get; }
+            IOption<ProgressiveValues> Option(Registry r);
+        }
+
+        public class ProgressiveItem
+        {
+            public Item Item;
+            public int Count;
+
+            public ProgressiveItem(Item item, int count)
+            {
+                Item = item;
+                Count = count;
+            }
         }
         
-        public class ProgressiveItem<TOption, TEnum> : OptionItem<TOption, TEnum>
-            where TOption : IOption<TEnum>
-            where TEnum : System.Enum
+        public class SeperateItem
         {
-            
+            public Item Item;
+            public int Stage;
+
+            public SeperateItem(Item item, int stage)
+            {
+                Item = item;
+                Stage = stage;
+            }
         }
-        
-        public class SeperateItem<TOption, TEnum> : OptionItem<TOption, TEnum>
-            where TOption : IOption<TEnum>
-            where TEnum : System.Enum
+
+        public interface ISeperateItemLoader
+        {
+            Item Single(Registry r);
+            ProgressiveItem Progressive(Registry r);
+            int Count { get; }
+            SeperateItem[] Seperate(Registry r);
+            IOption<SeperateValues> Option(Registry r);
+        }
+
+        public abstract class Item : IRegistered
         {
             
         }
