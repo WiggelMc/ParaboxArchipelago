@@ -38,29 +38,29 @@ namespace ParaboxArchipelago.Generation
         public interface IProgressiveItemLoader
         {
             Item Single(Registry r);
-            ProgressiveItem Progressive(Registry r);
+            ProgressiveItemSpecifier Progressive(Registry r);
             int Count { get; }
             IOption<ProgressiveValues> Option(Registry r);
         }
 
-        public class ProgressiveItem
+        public class ProgressiveItemSpecifier
         {
-            public Item Item;
+            public ProgressiveItem Item;
             public int Count;
 
-            public ProgressiveItem(Item item, int count)
+            public ProgressiveItemSpecifier(ProgressiveItem item, int count)
             {
                 Item = item;
                 Count = count;
             }
         }
         
-        public class SeperateItem
+        public class SeperateItemSpecifier
         {
             public Item Item;
             public int Stage;
 
-            public SeperateItem(Item item, int stage)
+            public SeperateItemSpecifier(Item item, int stage)
             {
                 Item = item;
                 Stage = stage;
@@ -70,15 +70,36 @@ namespace ParaboxArchipelago.Generation
         public interface ISeperateItemLoader
         {
             Item Single(Registry r);
-            ProgressiveItem Progressive(Registry r);
-            int Count { get; }
-            SeperateItem[] Seperate(Registry r);
+            ProgressiveItemSpecifier Progressive(Registry r);
+            SeperateItemSpecifier[] Seperate(Registry r);
             IOption<SeperateValues> Option(Registry r);
         }
 
-        public abstract class Item : IRegistered
+        public interface IRequirement
         {
             
+        }
+        
+        public abstract class Item : IRegistered, IRequirement
+        {
+            
+        }
+
+        public class ProgressiveRequirement : IRequirement
+        {
+            public ProgressiveItem Item;
+            public int Stage;
+
+            public ProgressiveRequirement(ProgressiveItem item, int stage)
+            {
+                Item = item;
+                Stage = stage;
+            }
+        }
+        
+        public abstract class ProgressiveItem : Item
+        {
+            public ProgressiveRequirement Require(int stage) => new(this, stage);
         }
     }
 }

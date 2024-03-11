@@ -12,6 +12,10 @@ namespace ParaboxArchipelago.Generation
         public class ItemA : Item
         {
         }
+        
+        public class ItemB : ProgressiveItem
+        {
+        }
 
         public class LoaderA : ISingleItemLoader
         {
@@ -28,10 +32,9 @@ namespace ParaboxArchipelago.Generation
         {
             public Item Single(Registry r) => r.Get<ItemA>();
 
-            public ProgressiveItem Progressive(Registry r) => new(r.Get<ItemA>(), 3);
-            public int Count => 10;
+            public ProgressiveItemSpecifier Progressive(Registry r) => new(r.Get<ItemB>(), 3);
 
-            public SeperateItem[] Seperate(Registry r) => new SeperateItem[]
+            public SeperateItemSpecifier[] Seperate(Registry r) => new SeperateItemSpecifier[]
             {
                 new(r.Get<ItemA>(), 1),
                 new(r.Get<ItemA>(), 2),
